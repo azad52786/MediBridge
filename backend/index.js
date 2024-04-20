@@ -8,13 +8,15 @@ const io = new Server(8000 , {
 })
 
 
-let HashMpa = new Map();
+let HashMaP = new Map();
+let UserRoleToSocketMap = new Map();
 io.on('connection' , (socket) => {
     console.log("connected socket is : " , socket.id);
     socket.join(1111)
     socket.on('room:join' , ({email , roomId , role}) => {
-        HashMpa.set(socket.id , email);
-        if(HashMpa.size < 3){
+        HashMaP.set(socket.id , email);
+        UserRoleToSocketMap.set(role , socket.id);
+        if(HashMaP.size < 3){
             io.to(socket.id).emit('room:join' , {email , roomId , role});
             io.to(roomId).emit('user:join' , {email , newUser : socket.id })
             socket.join(roomId);
@@ -48,4 +50,31 @@ io.on('connection' , (socket) => {
     socket.on("newMessage" , ({message , userRole}) => {
         io.to(1111).emit("Message:recived" , {message , user : userRole});
     })
+
+    socket.on("call:end" , () => {
+        HashMaP.delete(socket.id);
+        // let socket = UserRoleToSocketMap.get(userRole);
+        let currSkt = 'abcd';
+        for(let [key, value] of HashMaP){
+            console.log(key);
+            currSkt = key;
+        }
+        console.log('present User :- ' , currSkt);
+        HashMaP.delete(currSkt);
+        io.to(currSkt).emit('call:end');
+    })
+
+
+    socket.on('disconnect', () => {
+        HashMaP.delete(socket.id);
+        console.log(HashMaP.size)
+        let currSkt = 'abcd';
+        for(let [key, value] of HashMaP){
+            console.log(key);
+            currSkt = key;
+        }
+        console.log('present User :- ' , currSkt);
+        io.to(currSkt).emit('user:disconnect');
+
+    });
 })

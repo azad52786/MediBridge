@@ -82,7 +82,7 @@ const ChattingPage = ({myStream , remoteStream}) => {
             <form className=' flex gap-3 relative' 
                 onSubmit={chatUpdateHandeler}
             >
-                <textarea rows="1" cols="1" placeholder='Enter your Message' ref={chat} class="overflow-y-scroll textArea m-0 rounded-full w-full resize-none border-0 bg-white py-[10px] pr-10 md:py-3.5 md:pr-12 max-h-52  pl-4 md:pl-6"></textarea>
+                <textarea rows="1" cols="1" placeholder='Enter your Message' ref={chat} className="overflow-y-scroll textArea m-0 rounded-full w-full resize-none border-0 bg-white py-[10px] pr-10 md:py-3.5 md:pr-12 max-h-52  pl-4 md:pl-6"></textarea>
                 <button type=' submit' className=' absolute top-[50%] translate-y-[-50%] right-2 w-9 aspect-square' ><IoSend className=' w-full h-full'/></button>
             </form>
         </div>

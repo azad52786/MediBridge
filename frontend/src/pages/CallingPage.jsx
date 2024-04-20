@@ -8,20 +8,24 @@ import { AiTwotoneAudio } from "react-icons/ai";
 import { CiVideoOn } from "react-icons/ci";
 import { CiVideoOff } from "react-icons/ci";
 import ChattingPage from "./ChattingPage";
+import toast from "react-hot-toast";
+import { MdCallEnd } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 
 // import toast from 'react-hot-toast';
 
 const CallingPage = ({ myStream , setMyStream }) => {
-  const [remoteUser, setRemoteUser] = useState(null);
+  const [ remoteUser, setRemoteUser] = useState(null);
   const [ callButton , setCallButton] = useState(true);
-  const [sendStreamBtn , setsendStreamBtn] = useState(true);
+  const [ sendStreamBtn , setsendStreamBtn] = useState(true);
   const [ remoteStream , setRemoteStream ] = useState(null);
   const [isMute , setIsmute] = useState(false);
   const [isVideoOff , setIsVideoOff] = useState(false);
-  const [ showChatSection , setShowChatSection] = useState(false);
+  const [ showChatSection , setShowChatSection ] = useState(false);
   const socket = useSocket();
   const { userRole } = useUserContext();
+  const navigate = useNavigate();
 
   const userJoinHandeler = useCallback(
     ({ email, newUser }) => {
@@ -45,21 +49,38 @@ const CallingPage = ({ myStream , setMyStream }) => {
   );
 
   const userCallingHandeler = useCallback(async()=>{
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio : true , 
-      video : true , 
-    })
-    setMyStream(stream);
+    // console.log(myStream);
+    if(!myStream){
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio : true , 
+        video : true , 
+      })
+      setMyStream(stream);
+    }
+    // console.log("hii " , myStream)
     const offer = await peerObject.getOffer();
     socket.emit('user:call' , {to : remoteUser , offer});
     setCallButton(false)
-  },[socket , setMyStream , setCallButton, remoteUser])
+  },[socket , myStream , setMyStream , setCallButton, remoteUser])
 
   const sendStream = useCallback(() => {
-   
-    for(const track of myStream.getTracks()){
-      peerObject.peer.addTrack(track , myStream);
-    }
+   if(myStream){
+     for(const track of myStream.getTracks()){
+       const senders = peerObject.peer.getSenders();
+       let senderExits = false;
+       senders.forEach((sender) => {
+          if(sender.track === track) senderExits = true;
+       })
+
+       if(!senderExits){
+          peerObject.peer.addTrack(track , myStream);
+       }
+       else{
+        console.log("Sender already exists for the track");
+       }
+       
+     }
+   }
   } , [myStream])
 
   const incomingCallHandeler = useCallback(async({from , offer}) => {
@@ -110,18 +131,98 @@ const CallingPage = ({ myStream , setMyStream }) => {
     console.log(myStream.getAudioTracks()[0].enabled)
   }
 
+  const disconnectHandeler = useCallback(() => {
+    if(userRole === "Doctor"){
+      toast("Patient is not available in the room. You may end the call or call Again",
+        {
+          icon: '👏',
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        }
+      );
+      setRemoteStream(null);
+      setRemoteUser(null);
+      setShowChatSection(false);
+      setCallButton(true);
+    }
+    else{
+      setRemoteStream(null);
+      setRemoteUser(null);
+      setShowChatSection(false);
+      toast("Doctor is not available in the room. You may end the call.",
+      {
+        icon: '👏',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      }
+      );
+    }
+    
+  } , [ userRole ,  setRemoteStream , setShowChatSection , setRemoteUser])
+
+
   function toggleVoiceMute (){
     if(myStream && myStream.getAudioTracks().length > 0){
       let AudioTracks = myStream.getAudioTracks()[0];
       AudioTracks.enabled = !AudioTracks.enabled;
     }
   }
+
+  const removeTrack = useCallback(() => {
+    if(myStream){
+      myStream.getTracks().forEach(track => {track.stop()})
+    }
+
+    if(peerObject.peer){
+      const senders = peerObject.peer.getSenders();
+
+      senders.forEach(sender => {
+        peerObject.peer.removeTrack(sender);
+      })
+    }
+  } , [myStream])
+
+  const callendHandeler = useCallback(() => {
+    removeTrack()
+    setRemoteUser(null)
+    setCallButton(false);
+    setsendStreamBtn(false)
+    setRemoteStream(null)
+    setIsmute(false);
+    setIsVideoOff(false)
+    setShowChatSection(false);
+    socket.emit("call:end");
+    socket.close()
+    navigate('/')
+    
+  } , [socket , navigate , removeTrack])
+  const callendReciveHandeler = useCallback(() => {
+    removeTrack();
+    setRemoteUser(null)
+    setCallButton(false);
+    setsendStreamBtn(false)
+    setRemoteStream(null)
+    setIsmute(false);
+    setIsVideoOff(false)
+    setShowChatSection(false);
+    socket.close()
+    navigate('/')
+  } , [ navigate , removeTrack])
+
   useEffect(() => {
     peerObject.peer.addEventListener('track' , ev => {
       const remoteStream = ev.streams;
       setRemoteStream(remoteStream[0]);
     })
   } , [])
+
+  
 
   useEffect(() => {
     peerObject.peer.addEventListener('negotiationneeded' , negotiationHandeler);
@@ -138,6 +239,8 @@ const CallingPage = ({ myStream , setMyStream }) => {
     socket.on('call:accepted:done' , callAcceptDoneHandeler);
     socket.on('peer:nego:needed' , negotiationIncomeingHandeler);
     socket.on('peer:nego:done' , negotiationFinalHandeler);
+    socket.on('user:disconnect' , disconnectHandeler);
+    socket.on('call:end' , callendReciveHandeler);
 
     return () => {
       socket.off("user:join", userJoinHandeler);
@@ -146,8 +249,10 @@ const CallingPage = ({ myStream , setMyStream }) => {
       socket.off('call:accepted:done' , callAcceptDoneHandeler);
       socket.off('peer:nego:needed' , negotiationIncomeingHandeler);
       socket.off('peer:nego:done' , negotiationFinalHandeler);
+      socket.off('user:disconnect' , disconnectHandeler);
+      socket.on('call:end' , callendReciveHandeler);
     };
-  }, [socket, remoteUserJoinHandeler , userJoinHandeler , incomingCallHandeler , callAcceptDoneHandeler , negotiationIncomeingHandeler , negotiationFinalHandeler]);
+  }, [socket, callendReciveHandeler ,  remoteUserJoinHandeler , userJoinHandeler , incomingCallHandeler , callAcceptDoneHandeler , negotiationIncomeingHandeler , negotiationFinalHandeler , disconnectHandeler]);
 
   return (
     <div className=" w-screen h-screen overflow-x-hidden">
@@ -183,21 +288,31 @@ const CallingPage = ({ myStream , setMyStream }) => {
               </div>
               <div className=" w-[300px] aspect-square"> 
               { userRole === "Patient" ? showChatSection && remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1> :  remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1>}
-                {remoteStream && (
+                { userRole === "Patient" ? showChatSection && remoteStream && (
                   <ReactPlayer
                   height={300}
                   width={300}
                     playing 
                     volume={1}
                     url={remoteStream}
-                  />
-                )}
+                  /> ): (
+                    remoteStream && 
+                      <ReactPlayer
+                      height={300}
+                      width={300}
+                        playing 
+                        volume={1}
+                        url={remoteStream}
+                      />
+                  )
+
+                }
               </div>
           </div>
          { myStream && <div className=" flex w-[30%] mx-auto gap-6">
             <div className= {`w-9 aspect-square rounded-full flex items-center justify-center cursor-pointer ${isMute ? "bg-pink-50" : "bg-white"}`}
               onClick={() => {
-                setIsmute(!isMute);
+                setIsmute(pre => !pre);
                 toggleVoiceMute()
               }}
             >
@@ -207,7 +322,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
             </div>
             <div className= {`w-9 aspect-square rounded-full flex items-center justify-center cursor-pointer ${isVideoOff ? "bg-pink-50" : "bg-white"}`}
               onClick={() => {
-                setIsVideoOff(!isVideoOff)
+                setIsVideoOff(pre => !pre)
                 toggleVideoMute()
               }}
             >
@@ -215,6 +330,25 @@ const CallingPage = ({ myStream , setMyStream }) => {
                 !isVideoOff ? <CiVideoOn  className=" w-7 h-7"/> : <CiVideoOff  className=" w-7 h-7"/>
               }
             </div>
+            {
+              myStream && 
+              <div className= {`w-9 aspect-square rounded-full flex items-center justify-center cursor-pointer}`}
+              style={{background : "red"}}
+              onClick={() => {
+                callendHandeler();
+              }}
+            >
+             
+              <MdCallEnd  className=" cursor-pointer w-7 h-7"/>
+             
+            </div>}
+            {
+        userRole === "Patient" && remoteStream && sendStreamBtn && 
+        <button  
+            className="w-9 aspect-square bg-caribbeangreen-400 rounded-full  flex items-center justify-center"
+          onClick={callReciveHandeler}
+        ><MdCallEnd className=" cursor-pointer w-7 h-7"/></button>
+      }
           </div>}
         </div>
 
@@ -232,13 +366,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
           onClick={userCallingHandeler}
         >Call</button>
       }
-      {
-        userRole === "Patient" && remoteStream && sendStreamBtn && 
-        <button  
-          className=" font-semibold p-3 text-richblack-900 mt-8 rounded-md bg-yellow-25 border-b border-pure-greys-50"
-          onClick={callReciveHandeler}
-        >Recive the Call</button>
-      }
+      
     </div>
   );
 };
