@@ -8,17 +8,24 @@ const io = new Server(8000 , {
 })
 
 
-
+let HashMpa = new Map();
 io.on('connection' , (socket) => {
     console.log("connected socket is : " , socket.id);
     socket.join(1111)
     socket.on('room:join' , ({email , roomId , role}) => {
-        io.to(socket.id).emit('room:join' , {email , roomId , role});
-        io.to(roomId).emit('user:join' , {email , newUser : socket.id })
-        socket.join(roomId);
+        HashMpa.set(socket.id , email);
+        if(HashMpa.size < 3){
+            io.to(socket.id).emit('room:join' , {email , roomId , role});
+            io.to(roomId).emit('user:join' , {email , newUser : socket.id })
+            socket.join(roomId);
+        }
+        else{
+            socket.emit("room:full" , "room is full");
+        }
     })
     socket.on("newUser:join", ({to}) => {
         console.log("sending Remote user :- " , to)
+        // socket.broadcast.emit('remoteUser:join', { from: socket.id });
         io.to(to).emit('remoteUser:join', { from: socket.id });
     })
 

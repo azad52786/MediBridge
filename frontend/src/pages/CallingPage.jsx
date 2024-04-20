@@ -169,6 +169,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
         <div className="flex flex-col justify-around items-center w-[48%]">
           <div className=" flex justify-around items-center w-full">
               <div className=" w-[300px] aspect-square">
+                <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole}</h1>
                   {myStream && (
                     <ReactPlayer
                       className= ""
@@ -176,16 +177,16 @@ const CallingPage = ({ myStream , setMyStream }) => {
                       width={300}
                       playing
                       muted
-                      
                       url={myStream}
                     />
                   )}
               </div>
               <div className=" w-[300px] aspect-square"> 
+              { userRole === "Patient" ? showChatSection && remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1> :  remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1>}
                 {remoteStream && (
                   <ReactPlayer
-                    height="600px"
-                    width="300px"
+                  height={300}
+                  width={300}
                     playing 
                     volume={1}
                     url={remoteStream}

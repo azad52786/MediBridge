@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useNavigate } from 'react-router-dom'
 import { useUserContext } from '../context/UserContext';
+import toast from 'react-hot-toast';
 
 const Room = ({setMyStream}) => {
     const [email , setEmail] = useState("");
@@ -26,13 +27,19 @@ const Room = ({setMyStream}) => {
       
     }, [navigate , setUserRole ]);
 
+    const roomfullHandeler = useCallback((message) => {
+      toast.error(message);
+    } , [])
+
     useEffect(() => {
       socket.on('room:join' , roomJoin);
+      socket.on('room:full' , roomfullHandeler);
 
       return () => {
         socket.off('room:join' , roomJoin);
+        socket.off('room:full' , roomfullHandeler);
       }
-    } , [socket , roomJoin]);
+    } , [socket , roomJoin , roomfullHandeler]);
 
 
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useSocket } from '../context/SocketContext';
 import { useUserContext } from '../context/UserContext';
+import { IoSend } from "react-icons/io5";
 
 const ChattingPage = ({myStream , remoteStream}) => {
     const chat = useRef("");
@@ -45,9 +46,10 @@ const ChattingPage = ({myStream , remoteStream}) => {
     <>
     { 
     remoteStream && myStream &&
-        <div className=' w-[38%] min-h-[560px] rounded-md'>
+        <div className=' w-[345px] p-4 h-[620px] rounded-md bg-caribbeangreen-50'>
             {/* screen  */}
-            <div className=' h-[90%] bg-richblue-300 p-4 overflow-y-scroll rounded-md'>
+            <h1 className='text-3xl font-bold text-black text-center mt-[-16px]'>Chat-In-Call</h1>
+            <div className=' h-[90%] overflow-y-scroll textArea overflow-x-hidden no-scrollbar rounded-md'>
             {
                 allChat.map((ele , index) => {
                     return (
@@ -57,14 +59,14 @@ const ChattingPage = ({myStream , remoteStream}) => {
                         {
                             ele.user !== userRole
                             ? 
-                           (<div className=' p-1 bg-white w-fit h-fit '
+                           (<div className=' p-1 bg-white w-[200px] h-fit'
                                 style={borderStyleP}
                            >
                                 <p className=' font-semibold text-pink-200'>{ele.user}</p>
                                 <p className=' font-inter text-black'>{ele.message}</p>
                            </div>)
                             : (
-                            <div className=' p-1 bg-white w-fit h-fit'
+                            <div className=' p-1 bg-white w-[200px] h-fit'
                             style={borderStyleD}
                             >
                                 <p className=' font-semibold text-pink-200'>{ele.user}</p>
@@ -77,11 +79,11 @@ const ChattingPage = ({myStream , remoteStream}) => {
             }
             </div>
             {/* input  */}
-            <form className=' flex' 
+            <form className=' flex gap-3 relative' 
                 onSubmit={chatUpdateHandeler}
             >
-                <input type="text" ref={chat} className=' w-[80%] h-[60px] rounded-md'/>
-                <button type=' submit' className=' w-[20%] font-semibold p-3 text-richblack-900 rounded-md bg-yellow-25 border-b border-pure-greys-50'>Send</button>
+                <textarea rows="1" cols="1" placeholder='Enter your Message' ref={chat} class="overflow-y-scroll textArea m-0 rounded-full w-full resize-none border-0 bg-white py-[10px] pr-10 md:py-3.5 md:pr-12 max-h-52  pl-4 md:pl-6"></textarea>
+                <button type=' submit' className=' absolute top-[50%] translate-y-[-50%] right-2 w-9 aspect-square' ><IoSend className=' w-full h-full'/></button>
             </form>
         </div>
     }
