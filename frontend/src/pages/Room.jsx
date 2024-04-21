@@ -22,9 +22,6 @@ const Room = ({setMyStream}) => {
     const roomJoin = useCallback(async({ roomId , role }) => {
       setUserRole(role);
       navigate(`/room/${roomId}`)
-
-      // navigate(`/room/${123}`)
-      
     }, [navigate , setUserRole ]);
 
     const roomfullHandeler = useCallback((message) => {

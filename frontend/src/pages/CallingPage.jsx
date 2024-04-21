@@ -13,6 +13,7 @@ import { MdCallEnd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 
+
 // import toast from 'react-hot-toast';
 
 const CallingPage = ({ myStream , setMyStream }) => {
@@ -23,6 +24,8 @@ const CallingPage = ({ myStream , setMyStream }) => {
   const [isMute , setIsmute] = useState(false);
   const [isVideoOff , setIsVideoOff] = useState(false);
   const [ showChatSection , setShowChatSection ] = useState(false);
+  const [isScreenShare , setIsScreenShare ] = useState(false);
+  const [screenStream , setScreenStream ] = useState(null)
   const socket = useSocket();
   const { userRole } = useUserContext();
   const navigate = useNavigate();
@@ -56,6 +59,8 @@ const CallingPage = ({ myStream , setMyStream }) => {
         video : true , 
       })
       setMyStream(stream);
+
+     
     }
     // console.log("hii " , myStream)
     const offer = await peerObject.getOffer();
@@ -126,7 +131,6 @@ const CallingPage = ({ myStream , setMyStream }) => {
       VideoTracks.enabled = !VideoTracks.enabled;
     }
     // setMyStream(myStream)
-    
     console.log(VideoTracks.enabled)
     console.log(myStream.getAudioTracks()[0].enabled)
   }
@@ -174,6 +178,22 @@ const CallingPage = ({ myStream , setMyStream }) => {
     }
   }
 
+  const shareScreenHandeler = async() => {
+    const senders = peerObject.peer.getSenders();
+    const videoSender = senders.find(sender => sender.track.kind === 'video');
+    
+    if(videoSender && !isScreenShare){
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({video : true})
+      setScreenStream(screenStream);
+      await videoSender.replaceTrack(screenStream.getVideoTracks()[0]);
+      setIsScreenShare(true);
+    }
+    else{
+      await videoSender.replaceTrack(myStream.getVideoTracks()[0])
+      setIsScreenShare(false);
+    }
+  }
+
   const removeTrack = useCallback(() => {
     if(myStream){
       myStream.getTracks().forEach(track => {track.stop()})
@@ -198,7 +218,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
     setIsVideoOff(false)
     setShowChatSection(false);
     socket.emit("call:end");
-    socket.close()
+    // socket.close()
     navigate('/')
     
   } , [socket , navigate , removeTrack])
@@ -211,7 +231,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
     setIsmute(false);
     setIsVideoOff(false)
     setShowChatSection(false);
-    socket.close()
+    // socket.close()
     navigate('/')
   } , [ navigate , removeTrack])
 
@@ -250,7 +270,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
       socket.off('peer:nego:needed' , negotiationIncomeingHandeler);
       socket.off('peer:nego:done' , negotiationFinalHandeler);
       socket.off('user:disconnect' , disconnectHandeler);
-      socket.on('call:end' , callendReciveHandeler);
+      socket.off('call:end' , callendReciveHandeler);
     };
   }, [socket, callendReciveHandeler ,  remoteUserJoinHandeler , userJoinHandeler , incomingCallHandeler , callAcceptDoneHandeler , negotiationIncomeingHandeler , negotiationFinalHandeler , disconnectHandeler]);
 
@@ -290,8 +310,8 @@ const CallingPage = ({ myStream , setMyStream }) => {
               { userRole === "Patient" ? showChatSection && remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1> :  remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1>}
                 { userRole === "Patient" ? showChatSection && remoteStream && (
                   <ReactPlayer
-                  height={300}
-                  width={300}
+                  height={600}
+                  width={600}
                     playing 
                     volume={1}
                     url={remoteStream}
@@ -333,23 +353,29 @@ const CallingPage = ({ myStream , setMyStream }) => {
             {
               myStream && 
               <div className= {`w-9 aspect-square rounded-full flex items-center justify-center cursor-pointer}`}
-              style={{background : "red"}}
-              onClick={() => {
+                style={{background : "red"}}
+                onClick={() => {
                 callendHandeler();
-              }}
-            >
-             
-              <MdCallEnd  className=" cursor-pointer w-7 h-7"/>
-             
-            </div>}
+                }}
+              >
+                <MdCallEnd  className=" cursor-pointer w-7 h-7"/> 
+              </div>
+            }
             {
-        userRole === "Patient" && remoteStream && sendStreamBtn && 
-        <button  
-            className="w-9 aspect-square bg-caribbeangreen-400 rounded-full  flex items-center justify-center"
-          onClick={callReciveHandeler}
-        ><MdCallEnd className=" cursor-pointer w-7 h-7"/></button>
-      }
-          </div>}
+              userRole === "Patient" && remoteStream && sendStreamBtn && 
+              <button  
+                  className="w-9 aspect-square bg-caribbeangreen-400 rounded-full  flex items-center justify-center"
+                onClick={callReciveHandeler}
+                ><MdCallEnd className=" cursor-pointer w-7 h-7"/>
+              </button>
+            }
+            <button
+              onClick={shareScreenHandeler}
+              className=" bg-white"
+            >Screen Share</button>
+          </div>
+          
+          }
         </div>
 
         {/* chatting  section*/}

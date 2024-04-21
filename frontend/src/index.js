@@ -3,21 +3,19 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import SocketContext from './context/SocketContext';
 import { BrowserRouter } from 'react-router-dom';
-import UserContext from './context/UserContext';
 import { Toaster } from 'react-hot-toast';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
     <BrowserRouter>
-        <UserContext>
-          <SocketContext>
+        {/* <UserContext>
+          <SocketContext> */}
             <App />
             <Toaster/>
-          </SocketContext>
-        </UserContext>
+          {/* </SocketContext>
+        </UserContext> */}
     </BrowserRouter>
   // </React.StrictMode>
 );
