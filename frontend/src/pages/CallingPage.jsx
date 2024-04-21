@@ -11,6 +11,8 @@ import ChattingPage from "./ChattingPage";
 import toast from "react-hot-toast";
 import { MdCallEnd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { LuScreenShare } from "react-icons/lu";
+import { MdStopScreenShare } from "react-icons/md";
 
 
 
@@ -291,35 +293,35 @@ const CallingPage = ({ myStream , setMyStream }) => {
       )}
       <div className=" flex w-11/12 mx-auto justify-between max-h-fit">
         {/* video player section */}
-        <div className="flex flex-col justify-around items-center w-[48%]">
-          <div className=" flex justify-around items-center w-full">
-              <div className=" w-[300px] aspect-square">
-                <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole}</h1>
+        <div className="flex flex-col items-center gap-12 w-[48%]">
+          <div className=" flex w-full">
+              <div className="ml-[-150px]">
+                <h1 className="text-2xl font-bold text-caribbeangreen-100 text-center mb-1">{userRole}</h1>
                   {myStream && (
                     <ReactPlayer
-                      className= ""
-                      height={300}
-                      width={300}
+                    className=''
+                      height={200}
+                      width={500}
                       playing
                       muted
                       url={myStream}
                     />
                   )}
               </div>
-              <div className=" w-[300px] aspect-square"> 
-              { userRole === "Patient" ? showChatSection && remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1> :  remoteStream && myStream && <h1 className="text-3xl font-bold text-caribbeangreen-100 mb-3">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1>}
+              <div className="ml-[-100px]"> 
+              { userRole === "Patient" ? showChatSection && remoteStream && myStream && <h1 className="text-2xl font-bold text-center text-caribbeangreen-100 ">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1> :  remoteStream && myStream && <h1 className="text-2xl font-bold text-center text-caribbeangreen-100">{userRole === "Doctor" ? "Patient" : "Doctor"}</h1>}
                 { userRole === "Patient" ? showChatSection && remoteStream && (
                   <ReactPlayer
-                  height={600}
-                  width={600}
+                  height={500}
+                  width={780}
                     playing 
                     volume={1}
                     url={remoteStream}
                   /> ): (
                     remoteStream && 
                       <ReactPlayer
-                      height={300}
-                      width={300}
+                      height={500}
+                      width={780}
                         playing 
                         volume={1}
                         url={remoteStream}
@@ -369,12 +371,20 @@ const CallingPage = ({ myStream , setMyStream }) => {
                 ><MdCallEnd className=" cursor-pointer w-7 h-7"/>
               </button>
             }
-            <button
-              onClick={shareScreenHandeler}
-              className=" bg-white"
-            >Screen Share</button>
+            { userRole === "Patient" ? showChatSection && remoteStream && myStream &&
+              <button
+              className= {`w-9 aspect-square rounded-full flex items-center justify-center cursor-pointer}`}
+                style={{background : "yellow"}}
+                onClick={shareScreenHandeler}
+              >{isScreenShare ? (<LuScreenShare className=" cursor-pointer w-7 h-7"/>) : (<MdStopScreenShare className=" cursor-pointer w-7 h-7"/>)}</button>
+              : remoteStream && myStream &&
+              <button
+              className= {`w-9 aspect-square rounded-full flex items-center justify-center cursor-pointer}`}
+                style={{background : "yellow"}}
+                onClick={shareScreenHandeler}
+              >{isScreenShare ? (<LuScreenShare className=" cursor-pointer w-7 h-7"/>) : (<MdStopScreenShare className=" cursor-pointer w-7 h-7"/>)}</button>
+            }
           </div>
-          
           }
         </div>
 
