@@ -55,16 +55,17 @@ const CallingPage = ({ myStream , setMyStream }) => {
 
   const userCallingHandeler = useCallback(async()=>{
     // console.log(myStream);
-    if(!myStream){
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio : true , 
-        video : true , 
-      })
-      setMyStream(stream);
-
-     
+    try{
+      if(!myStream){
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio : true , 
+          video : true , 
+        })
+        setMyStream(stream);
+      }
+    }catch(e){
+      console.log(e);
     }
-    // console.log("hii " , myStream)
     const offer = await peerObject.getOffer();
     socket.emit('user:call' , {to : remoteUser , offer});
     setCallButton(false)
@@ -92,11 +93,17 @@ const CallingPage = ({ myStream , setMyStream }) => {
 
   const incomingCallHandeler = useCallback(async({from , offer}) => {
     const ans = await peerObject.getAnswer(offer);
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio : true , 
-      video : true , 
-    })
-    setMyStream(stream);
+    try{
+      if(!myStream){
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio : true , 
+          video : true , 
+        })
+        setMyStream(stream);
+      }
+    }catch(e){
+      console.log(e);
+    }
     socket.emit('call:accepted' , {to : from , ans});
   } , [socket , setMyStream]);
 
@@ -132,9 +139,6 @@ const CallingPage = ({ myStream , setMyStream }) => {
     if(myStream && myStream.getVideoTracks().length > 0){
       VideoTracks.enabled = !VideoTracks.enabled;
     }
-    // setMyStream(myStream)
-    console.log(VideoTracks.enabled)
-    console.log(myStream.getAudioTracks()[0].enabled)
   }
 
   const disconnectHandeler = useCallback(() => {
@@ -185,10 +189,14 @@ const CallingPage = ({ myStream , setMyStream }) => {
     const videoSender = senders.find(sender => sender.track.kind === 'video');
     
     if(videoSender && !isScreenShare){
-      const screenStream = await navigator.mediaDevices.getDisplayMedia({video : true})
-      setScreenStream(screenStream);
-      await videoSender.replaceTrack(screenStream.getVideoTracks()[0]);
-      setIsScreenShare(true);
+      try{
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({video : true})
+        setScreenStream(screenStream);
+        await videoSender.replaceTrack(screenStream.getVideoTracks()[0]);
+        setIsScreenShare(true);
+      }catch(e){
+        console.log(e);
+      }
     }
     else{
       await videoSender.replaceTrack(myStream.getVideoTracks()[0])
