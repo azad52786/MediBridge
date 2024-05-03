@@ -52,6 +52,7 @@ io.on('connection' , (socket) => {
     })
 
     socket.on("call:end" , () => {
+        console.log("call end call")
         HashMaP.delete(socket.id);
         // let socket = UserRoleToSocketMap.get(userRole);
         let currSkt = 'abcd';
@@ -63,8 +64,6 @@ io.on('connection' , (socket) => {
         HashMaP.delete(currSkt);
         io.to(currSkt).emit('call:end');
     })
-
-
     socket.on('disconnect', () => {
         HashMaP.delete(socket.id);
         console.log(HashMaP.size)
@@ -75,6 +74,5 @@ io.on('connection' , (socket) => {
         }
         console.log('present User :- ' , currSkt);
         io.to(currSkt).emit('user:disconnect');
-
     });
 })

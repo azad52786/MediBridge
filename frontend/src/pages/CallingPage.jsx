@@ -105,7 +105,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
       console.log(e);
     }
     socket.emit('call:accepted' , {to : from , ans});
-  } , [socket , setMyStream]);
+  } , [socket , myStream , setMyStream]);
 
   const callAcceptDoneHandeler = useCallback(async({from , ans}) => {
     await peerObject.setRemoteDesc(ans);
@@ -153,6 +153,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
           },
         }
       );
+      
       setRemoteStream(null);
       setRemoteUser(null);
       setShowChatSection(false);
@@ -190,9 +191,9 @@ const CallingPage = ({ myStream , setMyStream }) => {
     
     if(videoSender && !isScreenShare){
       try{
-        const screenStream = await navigator.mediaDevices.getDisplayMedia({video : true})
-        setScreenStream(screenStream);
-        await videoSender.replaceTrack(screenStream.getVideoTracks()[0]);
+        const screen = await navigator.mediaDevices.getDisplayMedia({video : true})
+        setScreenStream(screen);
+        await videoSender.replaceTrack(screen.getVideoTracks()[0]);
         setIsScreenShare(true);
       }catch(e){
         console.log(e);
@@ -204,14 +205,15 @@ const CallingPage = ({ myStream , setMyStream }) => {
     }
   }
 
+  
+
   const removeTrack = useCallback(() => {
     if(myStream){
       myStream.getTracks().forEach(track => {track.stop()})
     }
-
+    
     if(peerObject.peer){
       const senders = peerObject.peer.getSenders();
-
       senders.forEach(sender => {
         peerObject.peer.removeTrack(sender);
       })
@@ -228,10 +230,11 @@ const CallingPage = ({ myStream , setMyStream }) => {
     setIsVideoOff(false)
     setShowChatSection(false);
     socket.emit("call:end");
-    // socket.close()
-    navigate('/')
-    
+    navigate('/');
+    window.location.reload(); 
   } , [socket , navigate , removeTrack])
+
+
   const callendReciveHandeler = useCallback(() => {
     removeTrack();
     setRemoteUser(null)
@@ -241,25 +244,27 @@ const CallingPage = ({ myStream , setMyStream }) => {
     setIsmute(false);
     setIsVideoOff(false)
     setShowChatSection(false);
-    // socket.close()
+    socket.emit("call:end");
     navigate('/')
-  } , [ navigate , removeTrack])
+    window.location.reload();
+  } , [ socket , navigate , removeTrack])
 
   useEffect(() => {
     peerObject.peer.addEventListener('track' , ev => {
       const remoteStream = ev.streams;
+      // console.log("track exchange done")
       setRemoteStream(remoteStream[0]);
     })
   } , [])
 
   
 
-  useEffect(() => {
-    peerObject.peer.addEventListener('negotiationneeded' , negotiationHandeler);
-    return () => {
-      peerObject.peer.removeEventListener('negotiationneeded' , negotiationHandeler);
-    }
-  } , [negotiationHandeler])
+useEffect(() => {
+  peerObject.peer.addEventListener('negotiationneeded', negotiationHandeler);
+  return () => {
+    peerObject.peer.removeEventListener('negotiationneeded', negotiationHandeler);
+  };
+}, [negotiationHandeler]);
 
 
   useEffect(() => {

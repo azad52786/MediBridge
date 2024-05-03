@@ -15,6 +15,12 @@ class peerService{
         }
     }
 
+    async disconnect() {
+        if (this.peer) {
+            this.peer.close(); // This closes the connection to the ICE server
+            this.peer = null; // Optionally reset the peer connection
+        }
+    }
     async getOffer(){
         if(this.peer){
             const offer = await this.peer.createOffer();
@@ -37,6 +43,7 @@ class peerService{
             return ans;
         }
     }
+
 }
 
 const peerObject = new peerService();
