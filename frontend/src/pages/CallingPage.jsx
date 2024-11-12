@@ -76,10 +76,12 @@ const CallingPage = ({ myStream , setMyStream }) => {
      for(const track of myStream.getTracks()){
        const senders = peerObject.peer.getSenders();
        let senderExits = false;
+       console.log(track);
+       console.log(senders);
        senders.forEach((sender) => {
           if(sender.track === track) senderExits = true;
        })
-
+       // when call end remove user also possible
        if(!senderExits){
           peerObject.peer.addTrack(track , myStream);
        }
@@ -253,6 +255,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
     peerObject.peer.addEventListener('track' , ev => {
       const remoteStream = ev.streams;
       // console.log("track exchange done")
+      // here we have lots of streams array like audio,video / screen shareing we just want audio video
       setRemoteStream(remoteStream[0]);
     })
   } , [])

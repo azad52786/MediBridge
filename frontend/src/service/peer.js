@@ -2,7 +2,7 @@ class peerService{
     constructor(){
         if(!this.peer){
             this.peer = new RTCPeerConnection({
-                // find public address
+                // find all Possible Connection (public address) By Which Two Browser Can Connect to Each Other 
                 iceServers : [
                     {
                         urls : [
