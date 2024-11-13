@@ -11,8 +11,12 @@ const StreamContext = ({children}) => {
   const [audioOutputDevices, setAudioOutputDevices] = useState(null);
   const [currentAudioDevice, setCurrentAudioDevice] = useState(null);
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
+  const [ isAudioMute , setIsAudioMute ] = useState(false);
+  const [ isVideoMute , setIsVideoMute ] = useState(false);
   return (
     <StreamProvider.Provider value={{
+        isAudioMute , setIsAudioMute , 
+        isVideoMute , setIsVideoMute ,
         localStream,
         setLocalStream,
         videoDevices,

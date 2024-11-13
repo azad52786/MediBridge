@@ -1,15 +1,25 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import ReactPlayer from "react-player";
 import ChangeDevice from "./ChangeDevice";
-import { IoVideocamOutline } from "react-icons/io5";
-import { CiMicrophoneOn } from "react-icons/ci";
 import { HiOutlineSpeakerWave } from "react-icons/hi2";
 import { useStreamContext } from "../../../Context/StreamContext";
+import { CiMicrophoneOn, CiMicrophoneOff } from "react-icons/ci";
+import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
+import LeftSideBarComponent from "./LeftSideBarComponent";
+import AudioDeviceComponent from "./AudioDeviceComponent";
+import { findTracksHandler, muteAndUnmuteHandeler } from "../../../utils/handelerFunction";
+import { TRACKS } from "../../../utils/constant";
+
+export const REACT_ICONS = {
+  AUDIO_UNMUTE: <CiMicrophoneOn />,
+  AUDIO_MUTE: <CiMicrophoneOff style={{ color: "red" }} />,
+  VIDEO_ON: <IoVideocamOutline />,
+  VIDEO_OFF: <IoVideocamOffOutline style={{ color: "red" }} />,
+};
 
 const StudioHome = () => {
-  const navigate = useNavigate();
-    const {
+
+  const {
     localStream,
     setLocalStream,
     videoDevices,
@@ -22,9 +32,12 @@ const StudioHome = () => {
     setCurrentAudioDevice,
     currentVideoDevice,
     setCurrentVideoDevice,
+    isVideoMute,
+    setIsVideoMute,
+    isAudioMute,
+    setIsAudioMute,
   } = useStreamContext();
-  const [name, setName] = useState("");
-  const videoRef = useRef(null); 
+  const videoRef = useRef(null);
 
   const getUserMedia = useCallback(async () => {
     try {
@@ -68,17 +81,9 @@ const StudioHome = () => {
       }
     }
   }, [setLocalStream]);
-  
-  const submitHandler = (e) => {
-    e.preventDefault();
-    if(!localStream){
 
-      alert("Please give video permission first.");
-      return;
-    }
-    if (name.trim() === "") return;
-    navigate(`/studio/call?userName=${name}`);
-  }
+
+
 
   useEffect(() => {
     getUserMedia();
@@ -86,9 +91,8 @@ const StudioHome = () => {
 
   // updation of the audio and video devices parsent over system
   useEffect(() => {
-
     (async function () {
-      if(!currentAudioDevice || !currentVideoDevice) return ;
+      if (!currentAudioDevice || !currentVideoDevice) return;
       try {
         let newStream = await navigator.mediaDevices.getUserMedia({
           audio: {
@@ -104,6 +108,14 @@ const StudioHome = () => {
         });
 
         if (!newStream) return;
+        let audioTrack = findTracksHandler(newStream , TRACKS.AUDIO_TRACK);
+        let videoTrack = findTracksHandler(newStream, TRACKS.VIDEO_TRACK);
+        if(isAudioMute){
+          muteAndUnmuteHandeler(audioTrack, false);
+        }
+        if(isVideoMute){
+          muteAndUnmuteHandeler(videoTrack, false);
+        }
         setLocalStream(newStream);
       } catch (error) {
         if (error.name === "NotAllowedError") {
@@ -131,54 +143,63 @@ const StudioHome = () => {
   return (
     <div className=" w-fit h-full flex items-center justify-center">
       <div className="w-[85%] grid grid-cols-2 gap-10">
-        <div className=" w-full text-start">
-          <p
-            className=" font-edu-sa font-semibold mt-10
-        
-           text-base text-grey-500 
-        "
-          >
-            You're about to join in Omegal{" "}
-          </p>
-          <h1 className=" text-3xl mt-2 font-semibold font-mono">
-            Let’s check your cam and mic
-          </h1>
-          <form
-            onSubmit={submitHandler}
-          >
-            <input
-              type="text"
-              placeholder="Enter Your Name"
-              required
-              onChange={(e) => setName(e.target.value)}
-              className=" block bg-[#2B2B2B] py-2 mt-4 px-4 w-[80%]  rounded-md focus:outline outline-violate-500 "
-            />
-            <button className=" mt-6 py-2 font-bold px-4 bg-violate-600 rounded-md hover:shadow-lg">
-              Let's Start
-            </button>
-          </form>
-        </div>
-
+        <LeftSideBarComponent localStream={localStream} />
         <div className=" w-full bg-[#1D1D1D] p-4 rounded-md">
           <div className=" w-full rounded-md">
             {
-              <div className=" w-full h-[200px] overflow-hidden">
+              <div className=" w-full h-[250px] overflow-hidden">
                 {!localStream ? (
                   <div className=" h-full w-full bg-[#2B2B2B] animate-pulse rounded-md"></div>
                 ) : (
-                  <video
-                    className="w-full h-full rounded-md"
-                    ref={videoRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    style={{
-                      transform: "scale(-1, 1)",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  ></video>
+                  <div className=" w-full h-full relative">
+                    <video
+                      className="w-full h-full rounded-md"
+                      ref={videoRef}
+                      autoPlay
+                      muted
+                      playsInline
+                      style={{
+                        transform: "scale(-1, 1)",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    ></video>
+                    <div className=" absolute bottom-2 w-full text-center text-3xl flex justify-center items-center gap-2">
+                      <div
+                        onClick={() => setIsAudioMute(pre => {
+                          let audioTracks = findTracksHandler(localStream , TRACKS.AUDIO_TRACK);
+                          muteAndUnmuteHandeler(audioTracks , pre);
+                          return !pre;
+                        })}
+                        className={`bg-grey-800 p-2 rounded-md bg-opacity-50 cursor-pointer ${
+                          isAudioMute ? "text-accent-primary" : ""
+                        } `}
+                      >
+                        {!isAudioMute ? (
+                          <CiMicrophoneOn />
+                        ) : (
+                          <CiMicrophoneOff />
+                        )}
+                      </div>
+                      <div
+                         onClick={() => setIsVideoMute(pre => {
+                          let videoTracks = findTracksHandler(localStream , TRACKS.VIDEO_TRACK);
+                          muteAndUnmuteHandeler(videoTracks  , pre);
+                          return !pre;
+                        })}
+                        className={`bg-grey-800 p-2 rounded-md bg-opacity-50 cursor-pointer ${
+                          isVideoMute ? "text-accent-secondary" : ""
+                        } `}
+                      >
+                        {!isVideoMute ? (
+                          <IoVideocamOutline />
+                        ) : (
+                          <IoVideocamOffOutline />
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
               // localStream && <ReactPlayer className="w-full h-full" playing muted url={localStream} height={200} />
