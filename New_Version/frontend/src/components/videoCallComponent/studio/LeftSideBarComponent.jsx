@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
-const LeftSideBarComponent = (localStream) => {
+const LeftSideBarComponent = ({localStream}) => {
 
   const [name, setName] = useState("");
   const navigate = useNavigate();

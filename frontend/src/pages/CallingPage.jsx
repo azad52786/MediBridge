@@ -110,7 +110,7 @@ const CallingPage = ({ myStream , setMyStream }) => {
   } , [socket , myStream , setMyStream]);
 
   const callAcceptDoneHandeler = useCallback(async({from , ans}) => {
-    await peerObject.setRemoteDesc(ans);
+    await perObject.setRemoteDesc(ans);e
     // stream shareing is needed 
     sendStream();
   } , [sendStream])

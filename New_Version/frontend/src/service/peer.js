@@ -24,7 +24,8 @@ class Peer {
     async getOffer(){
         if(this.peer){
             const offer = await this.peer.createOffer();
-            await this.peer.setLocalDescription(new RTCSessionDescription(offer));
+            // await this.peer.setLocalDescription(new RTCSessionDescription(offer));
+            await this.peer.setLocalDescription(offer);
             return offer;
         }
     }
@@ -32,15 +33,18 @@ class Peer {
     async getAnswer (offer){
         if(this.peer){
             const answer = await this.peer.createAnswer();
-            await this.peer.setLocalDescription(new RTCSessionDescription(answer));
-            await this.peer.setRemoteDescription(new RTCSessionDescription(offer));
+            await this.peer.setLocalDescription(answer);
+            await this.peer.setRemoteDescription(offer);
             return answer;
         }
     }
     
     async setRemoteDesc(answer){
         if(this.peer){
-            await this.peer.setRemoteDescription(new RTCSessionDescription(answer));
+            await this.peer.setRemoteDescription(answer);
         }
     }
 }
+
+const peer = new Peer();
+export default peer.peer;

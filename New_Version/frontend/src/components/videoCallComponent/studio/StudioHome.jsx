@@ -47,7 +47,7 @@ const StudioHome = () => {
       });
       if (!userStream) return;
       setLocalStream(userStream);
-
+      console.log(localStream)
       const getAllDevices = await navigator.mediaDevices.enumerateDevices();
       if (getAllDevices.length > 0) {
         const videoDevices = getAllDevices.filter(
@@ -108,6 +108,7 @@ const StudioHome = () => {
         });
 
         if (!newStream) return;
+        // set the steam mute and unmute as perviously it has 
         let audioTrack = findTracksHandler(newStream , TRACKS.AUDIO_TRACK);
         let videoTrack = findTracksHandler(newStream, TRACKS.VIDEO_TRACK);
         if(isAudioMute){
@@ -133,8 +134,10 @@ const StudioHome = () => {
   }, [currentAudioDevice, currentVideoDevice]);
 
   useEffect(() => {
-    if (videoRef.current && localStream)
+    if (videoRef.current && localStream){
+      console.log("local Stream is : " , localStream)
       videoRef.current.srcObject = localStream;
+    }
     return () => {
       if (localStream) localStream.getTracks().forEach((track) => track.stop());
     };

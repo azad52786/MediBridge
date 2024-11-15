@@ -22,6 +22,5 @@ export class RoomService {
         this.rooms.set(roomId, {user1 , user2});
         // send the socket Id of User 2 for sending offer 
         io.to(user1.socket).emit("match:done", {roomId , remoteUserName : user2.userName , remoteSocketId : user2.socket});
-        // io.to(user2.socket).emit("match:done", {roomId , remoteUserName : user1.userName , remoteSocketId : user1.socket});
     }
 }

@@ -30,6 +30,18 @@ io.on('connection', (socket : Socket) => {
     socket.on('call:request', ({name}) => {
         userService.addUser(socket.id, name);
     });
+    
+    socket.on("call:offer" , ({roomId , from , name , to , offer}) => {
+       io.to(to).emit("call:offer" , {remoteSocketId : from, remoteUserName : name, roomId , offer});
+    })
+    
+    socket.on("call:answer" , ({to , roomId , answer}) => {
+       io.to(to).emit("call:accepted" , {answer, roomId});
+    })
+    
+    socket.on('call:accepted' , ({ to  , answer }) => {
+       io.to(to).emit("call:accepted:done" , {answer});
+    })
 
     socket.on('disconnect', () => {
         console.log('User disconnected');
