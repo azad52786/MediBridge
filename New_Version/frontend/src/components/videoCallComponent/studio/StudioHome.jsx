@@ -9,6 +9,7 @@ import LeftSideBarComponent from "./LeftSideBarComponent";
 import AudioDeviceComponent from "./AudioDeviceComponent";
 import { findTracksHandler, muteAndUnmuteHandeler } from "../../../utils/handelerFunction";
 import { TRACKS } from "../../../utils/constant";
+import { useLocation } from "react-router-dom";
 
 export const REACT_ICONS = {
   AUDIO_UNMUTE: <CiMicrophoneOn />,
@@ -38,7 +39,7 @@ const StudioHome = () => {
     setIsAudioMute,
   } = useStreamContext();
   const videoRef = useRef(null);
-
+  const location = useLocation();
   const getUserMedia = useCallback(async () => {
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
@@ -139,7 +140,9 @@ const StudioHome = () => {
       videoRef.current.srcObject = localStream;
     }
     return () => {
-      if (localStream) localStream.getTracks().forEach((track) => track.stop());
+      if (localStream ){
+         localStream.getTracks().forEach((track) => track.stop());
+      }
     };
   }, [localStream]);
 

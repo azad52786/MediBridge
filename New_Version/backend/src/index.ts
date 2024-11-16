@@ -28,21 +28,27 @@ io.on('connection', (socket : Socket) => {
     socket.emit("connected");
 
     socket.on('call:request', ({name}) => {
+        console.log("request: " + name);
         userService.addUser(socket.id, name);
     });
     
     socket.on("call:offer" , ({roomId , from , name , to , offer}) => {
        io.to(to).emit("call:offer" , {remoteSocketId : from, remoteUserName : name, roomId , offer});
     })
-    
-    socket.on("call:answer" , ({to , roomId , answer}) => {
-       io.to(to).emit("call:accepted" , {answer, roomId});
-    })
+  
     
     socket.on('call:accepted' , ({ to  , answer }) => {
        io.to(to).emit("call:accepted:done" , {answer});
+       console.log("call done");
     })
 
+    socket.on("negotiation:handshake" , ({ to , offer}) => {
+       io.to(to).emit("negotiation:handshake" , {from : socket.id , offer});
+    })
+    
+    socket.on("negotiation:answer" , ({ to , answer }) => {
+      io.to(to).emit("negotiation:final" , {from : socket.id , answer});
+    })
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });

@@ -1,4 +1,4 @@
-class Peer {
+class PeerSevice {
     constructor(){
         if(!this.peer){
             this.peer = new RTCPeerConnection({
@@ -17,7 +17,7 @@ class Peer {
     async disconnectPeer(){
         if(this.peer){
             this.peer.close();
-            this.peer = null; // Reset the peer connection
+            this.peer = null;
         }
     }
     
@@ -32,19 +32,21 @@ class Peer {
     
     async getAnswer (offer){
         if(this.peer){
-            const answer = await this.peer.createAnswer();
-            await this.peer.setLocalDescription(answer);
             await this.peer.setRemoteDescription(offer);
+            const answer = await this.peer.createAnswer();
+            console.log("Ans in peer Desc: " + answer)
+            await peer.peer.setLocalDescription(answer);
             return answer;
         }
     }
     
     async setRemoteDesc(answer){
         if(this.peer){
+            console.log("answer is " , answer);
             await this.peer.setRemoteDescription(answer);
         }
     }
 }
 
-const peer = new Peer();
-export default peer.peer;
+const peer = new PeerSevice();
+export default peer;
