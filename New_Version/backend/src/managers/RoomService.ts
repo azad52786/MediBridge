@@ -12,6 +12,7 @@ export interface Room {
 
 
 export class RoomService {
+
     private rooms : Map<string, Room>;
     constructor(){
         this.rooms = new Map<string ,Room>();

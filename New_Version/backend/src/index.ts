@@ -26,6 +26,7 @@ io.on('connection', (socket : Socket) => {
     console.log('User connected with socket id ' + socket.id);
 
     socket.emit("connected");
+    // signalling is done here 
 
     socket.on('call:request', ({name}) => {
         console.log("request: " + name);
