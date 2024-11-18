@@ -8,13 +8,12 @@ import React, {
 import { useSearchParams } from "react-router-dom";
 import { useSocket } from "../../../Context/SocketContext";
 import { useStreamContext } from "../../../Context/StreamContext";
-import peer from "../../../service/peer";
+import { PeerService } from "../../../service/peer";
 import { TRACKS } from "../../../utils/constant";
 import {
   findTracksHandler,
   muteAndUnmuteHandeler,
 } from "../../../utils/handelerFunction";
-
 const CallPageHome = () => {
   const { currentAudioDevice, currentVideoDevice, isAudioMute, isVideoMute } =
     useStreamContext();
@@ -25,19 +24,23 @@ const CallPageHome = () => {
   const [roomId, setRoomId] = useState(null);
   const localvideoRef = useRef("");
   const remotevideoRef = useRef("");
-
   const [remoteUserDetails, setRemoteUserDetails] = useState(null);
+  const [peer, setPeer] = useState(null);
   const socket = useSocket();
+  const remoteUserIdRef = useRef(null);
+
   const sendOffer = useCallback(
     async ({ roomId, remoteUserName, remoteSocketId }) => {
-      console.log("match done called");
+      console.log("match done called and creating offer");
       setRoomId(roomId);
       setRemoteUserDetails({
         remoteUserName,
         remoteSocketId,
       });
+      console.log("remoteusedetails updated");
+      console.log(peer);
       const offer = await peer.getOffer();
-      console.log(offer);
+      console.log("offer is ", offer);
       socket.emit("call:offer", {
         roomId,
         from: socket.id,
@@ -46,7 +49,7 @@ const CallPageHome = () => {
         offer,
       });
     },
-    [socket, setRoomId, setRemoteUserDetails]
+    [peer, socket]
   );
   const sendAnswer = useCallback(
     async ({ remoteSocketId, remoteUserName, roomId, offer }) => {
@@ -55,70 +58,179 @@ const CallPageHome = () => {
       console.log("answer creating", offer);
       const answer = await peer.getAnswer(offer);
       // do from here
-      console.log("ans in calling page " , answer);
+      console.log("ans in calling page ", answer);
       socket.emit("call:accepted", { to: remoteSocketId, answer });
     },
-    [socket, setRoomId, setRemoteUserDetails]
+    [peer, socket, setRoomId, setRemoteUserDetails]
   );
-   
-   const callAccepted = useCallback(async ({ answer }) => {
-    console.log("setting remote desc by user 1", answer);
-    await peer.setRemoteDesc(answer);
-    console.log("Connection Done")
-  }, []);
+  
+   const sendStream = useCallback(() => {
+    console.log("sending stream");
+    if (localStream) {
+      const existingSenders = peer.peer.getSenders();
+
+      for (let track of localStream.getTracks()) {
+        const isTrackAlreadyAdded = existingSenders.some(
+          (sender) => sender.track === track
+        );
+
+        if (!isTrackAlreadyAdded) {
+          console.log("Adding new track:", track);
+          peer.peer.addTrack(track, localStream);
+        } else {
+          console.log("Track already added:", track);
+        }
+      }
+    }
+  }, [localStream]);
+
+  const callAccepted = useCallback(
+    async ({ answer }) => {
+      console.log("setting remote desc by user 1", answer);
+      await peer.setRemoteDesc(answer);
+     sendStream()
+      console.log("Connection Done");
+    },
+    [peer, localStream , sendStream]
+  );
   const startCallingHandeler = () => {
+    console.log("calling Again...");
     socket.emit("call:request", { name });
   };
-  
-  const negotiationHandeler = useCallback(async() => {
-      const offer = await peer.getOffer();
-      console.log("negotiation handshake offer")
-      socket.emit("negotiation:handshake", { to : remoteStream , offer})
-  } , [socket])
 
-
-  const negotiationAnswerHandeler = useCallback(async({from, offer}) => {
-  
-    const ans = await peer.getAnswer(offer);
-    console.log("negotiation answer received");
-    socket.emit('negotiation:answer' , {to : from , ans});
-  } , [socket])
-  
-  const negotiationFinalHandeler = useCallback(async({from, ans}) => {
-    await peer.setRemoteDesc(ans);
-    console.log("negotiation done");
-  } , [])
-  
-  useEffect(() => {
-    peer.peer.addEventListener("negotiationneeded" , negotiationHandeler);
-    return  () => {
-      peer.peer.removeEventListener("negotiationneeded" , negotiationHandeler);
-    }
-  } , [negotiationHandeler])
-  useEffect(() => {
-    peer.peer.addEventListener("track", (ev) => {
-      const remoteStream = ev.streams;
-      // why remote stream of 0 there will be more than one stream like mediastream , displaystream (etc...)
-      if (remoteStream.length < 1) return;
-      setRemoteStream(remoteStream[0]);
+  const negotiationHandeler = useCallback(async () => {
+    const offer = await peer.getOffer();
+    console.log("negotiation handshake offer created");
+    console.log(remoteUserIdRef.current);
+    socket.emit("negotiation:handshake", {
+      to: remoteUserIdRef.current,
+      offer,
     });
+  }, [peer, socket]);
+
+  const negotiationAnswerHandeler = useCallback(
+    async ({ from, offer }) => {
+      const ans = await peer.getAnswer(offer);
+      console.log("negotiation answer received");
+      console.log(ans, from);
+      socket.emit("negotiation:answer", { to: from, ans });
+    },
+    [peer, socket]
+  );
+
+  const negotiationFinalHandeler = useCallback(
+    async ({ from, ans }) => {
+      await peer.setRemoteDesc(ans);
+      console.log("negotiation done");
+    },
+    [peer]
+  );
+
+  const disconnectPeerHandeler = useCallback(async () => {
+    startCallingHandeler();
   }, []);
+
+  const disconnectHandeler = useCallback(() => {
+    console.log("event disconnected");
+    setRoomId(null);
+    setRemoteStream(null);
+    setRemoteUserDetails(null);
+    // startCallingHandeler();
+  }, []);
+
+  const skipHandeler = () => {
+    setRemoteStream(null);
+    peer.disconnectPeer();
+    peer = null;
+    socket.emit("newConnection", {
+      name,
+      remoteSocket: remoteUserDetails?.remoteSocketId,
+      roomId,
+    });
+    setRoomId(null);
+    setRemoteUserDetails(null);
+  };
+
+ 
+
+  useEffect(() => {
+    if (remoteUserDetails)
+      remoteUserIdRef.current = remoteUserDetails.remoteSocketId;
+  }, [remoteUserDetails]);
+  useEffect(() => {
+    if (!peer) {
+      console.log("It's new peer connection");
+      let newPeerConnection = new PeerService();
+      setPeer(newPeerConnection);
+      return;
+    }
+    /// skip is pending
+    console.log("adding all of these theing for new peer connection");
+    if (peer) {
+      console.log("event added");
+      peer.peer.onconnectionstatechange = (event) => {
+        const connectionState = peer.peer.connectionState;
+        switch (connectionState) {
+          case "connected":
+            console.log("Peer connection established.");
+            break;
+          case "disconnected":
+            console.log("Peer disconnected.");
+            setPeer(null);
+            break;
+          case "failed":
+            console.log(peer);
+            console.error(
+              "Connection failed. Please check the network or configuration."
+            );
+            break;
+          case "closed":
+            console.log("Connection closed.");
+            break;
+          default:
+            console.log("Connection state:", connectionState);
+        }
+      };
+
+      peer.peer.onnegotiationneeded = negotiationHandeler;
+
+      peer.peer.ontrack = (ev) => {
+        const remoteStream = ev.streams;
+        if (remoteStream.length < 1) return;
+        setRemoteStream(remoteStream[0]);
+      };
+    }
+  }, [peer]);
+
   useEffect(() => {
     socket.on("match:done", sendOffer);
     socket.on("call:offer", sendAnswer);
     socket.on("call:accepted:done", callAccepted);
-    socket.on("negotiation:handshake" , negotiationAnswerHandeler);
-    socket.on("negotiation:final" , negotiationFinalHandeler);
+    socket.on("negotiation:handshake", negotiationAnswerHandeler);
+    socket.on("negotiation:final", negotiationFinalHandeler);
+    socket.on("make:new:peer", disconnectPeerHandeler);
+    socket.on("connection:end", disconnectHandeler);
 
     return () => {
-      socket.off("call:offer", sendOffer);
-      socket.off("call:answer", sendAnswer);
+      socket.off("match:done", sendOffer);
+      socket.off("call:offer", sendAnswer);
       socket.off("call:accepted:done", callAccepted);
-      socket.off("negotiation:handshake" , negotiationAnswerHandeler);
-      socket.off("negotiation:final" , negotiationFinalHandeler);
+      socket.off("negotiation:handshake", negotiationAnswerHandeler);
+      socket.off("negotiation:final", negotiationFinalHandeler);
+      socket.off("make:new:peer", disconnectPeerHandeler);
+      socket.off("connection:end", disconnectHandeler);
     };
-  }, [socket, sendAnswer, sendOffer, callAccepted , negotiationAnswerHandeler , negotiationFinalHandeler]);
-    useEffect(() => {
+  }, [
+    socket,
+    sendAnswer,
+    sendOffer,
+    callAccepted,
+    negotiationAnswerHandeler,
+    negotiationFinalHandeler,
+    disconnectPeerHandeler,
+    disconnectHandeler,
+  ]);
+  useEffect(() => {
     const initializeStream = async () => {
       try {
         if (!currentAudioDevice || !currentVideoDevice) return;
@@ -133,8 +245,7 @@ const CallPageHome = () => {
         });
 
         if (!newStream) return;
-        
-        
+
         const audioTrack = findTracksHandler(newStream, TRACKS.AUDIO_TRACK);
         const videoTrack = findTracksHandler(newStream, TRACKS.VIDEO_TRACK);
         if (isAudioMute) {
@@ -143,25 +254,23 @@ const CallPageHome = () => {
         if (isVideoMute) {
           muteAndUnmuteHandeler(videoTrack, false);
         }
-        for(let track of newStream.getTracks()){
-          peer.peer.addTrack(track, newStream);
-        }
-        setLocalStream(newStream);
 
+        setLocalStream(newStream);
       } catch (error) {
         console.error("Error initializing media stream:", error);
       }
     };
-    initializeStream();
+    if (currentAudioDevice && currentVideoDevice) initializeStream();
   }, []);
 
   useEffect(() => {
-    console.log("Local Stream Updated : " , localStream)
+    console.log("Local Stream Updated : ", localStream);
     if (localStream && localvideoRef.current) {
       localvideoRef.current.srcObject = localStream;
     }
   }, [localStream]);
   useEffect(() => {
+    sendStream();
     if (remoteStream && remotevideoRef.current) {
       remotevideoRef.current.srcObject = remoteStream;
       remotevideoRef.current.onloadedmetadata = () => {
@@ -175,6 +284,9 @@ const CallPageHome = () => {
     <div>
       <div className="bg-button-record px-2" onClick={startCallingHandeler}>
         This is Call page
+      </div>
+      <div className="bg-button-record px-2  mt-3" onClick={skipHandeler}>
+        skip
       </div>
       {localStream && (
         <video
@@ -198,6 +310,7 @@ const CallPageHome = () => {
           autoPlay
           // playsInline
           style={{
+            transform: "scale(-1, 1)",
             width: "100%",
             height: "100%",
             objectFit: "cover",

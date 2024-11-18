@@ -1,4 +1,4 @@
-class PeerSevice {
+export class PeerService {
     constructor(){
         if(!this.peer){
             this.peer = new RTCPeerConnection({
@@ -34,8 +34,8 @@ class PeerSevice {
         if(this.peer){
             await this.peer.setRemoteDescription(offer);
             const answer = await this.peer.createAnswer();
-            console.log("Ans in peer Desc: " + answer)
-            await peer.peer.setLocalDescription(answer);
+            console.log("Ans in peer Desc: " ,  answer)
+            await this.peer.setLocalDescription(answer);
             return answer;
         }
     }
@@ -47,6 +47,3 @@ class PeerSevice {
         }
     }
 }
-
-const peer = new PeerSevice();
-export default peer;

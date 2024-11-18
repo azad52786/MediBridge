@@ -1,14 +1,10 @@
-// import { Socket } from 'socket.io';
-// const express = require('express');
-// const http = require('http');
-// // const { Server } = require('socket.io')
-// import { Server } from 'socket.io';
-
 import express from 'express'
 import http from 'http';
 import { Socket } from'socket.io';
 import { Server } from 'socket.io';
 import { UserService } from './managers/UserManager';
+import { handleMatchmakingEvents } from './events/matchmaking';
+import { handleSignalingEvents } from './events/signaling';
 const app = express();
 const server = http.createServer(app);
 
@@ -23,36 +19,13 @@ export const io = new Server(server , {
 const userService = new UserService();
 
 io.on('connection', (socket : Socket) => {
-    console.log('User connected with socket id ' + socket.id);
+   console.log(`User connected: ${socket.id}`);
 
-    socket.emit("connected");
-    // signalling is done here 
+    // Register matchmaking events
+    handleMatchmakingEvents(io, socket , userService);
 
-    socket.on('call:request', ({name}) => {
-        console.log("request: " + name);
-        userService.addUser(socket.id, name);
-    });
-    
-    socket.on("call:offer" , ({roomId , from , name , to , offer}) => {
-       io.to(to).emit("call:offer" , {remoteSocketId : from, remoteUserName : name, roomId , offer});
-    })
-  
-    
-    socket.on('call:accepted' , ({ to  , answer }) => {
-       io.to(to).emit("call:accepted:done" , {answer});
-       console.log("call done");
-    })
-
-    socket.on("negotiation:handshake" , ({ to , offer}) => {
-       io.to(to).emit("negotiation:handshake" , {from : socket.id , offer});
-    })
-    
-    socket.on("negotiation:answer" , ({ to , answer }) => {
-      io.to(to).emit("negotiation:final" , {from : socket.id , answer});
-    })
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
+    // Register signaling events
+    handleSignalingEvents(io, socket , userService);
 });
 
 
