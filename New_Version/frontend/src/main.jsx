@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+ import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -6,6 +7,7 @@ import Home from "./pages/Home.jsx";
 import Studio from "./pages/Studio.jsx";
 import StudioHome from "./components/videoCallComponent/studio/StudioHome.jsx";
 import Call from "./pages/Call.jsx";
+import { ToastContainer } from 'react-toastify';
 
 const routeProvider = createBrowserRouter([
   {
@@ -38,5 +40,8 @@ const routeProvider = createBrowserRouter([
 ])
 
 createRoot(document.getElementById("root")).render(
+<>
   <RouterProvider router={routeProvider}/>
+  <ToastContainer />
+  </>
 );

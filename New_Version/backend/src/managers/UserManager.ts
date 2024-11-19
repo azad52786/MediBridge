@@ -40,14 +40,6 @@ export class UserService {
         this.matchingUser(socket);
     }
     
-    addNextUser(socket1: string, socket2: string , roomId : string) {
-        let roomDetails : Room | undefined = this.roomService.getRoomDetails(roomId);
-        if(!roomDetails) return ;
-        this.roomService.removeRoomDetils(roomId);
-        this.addUser(roomDetails.user1.socket , roomDetails.user1.userName);
-        this.addUser(roomDetails.user2.socket , roomDetails.user2.userName);
-    }
-    
     matchingUser(socket : string) : void {
         if(this.queue.length < 2) {
             console.log("queue kahli hea");
@@ -60,6 +52,31 @@ export class UserService {
         console.log("Two user are " , user1, user2);
         this.roomService.createRoom(user1, user2);  
     }
+    
+    addNextUser(socket1: string, socket2: string , roomId : string) {
+        let roomDetails : Room | undefined = this.roomService.getRoomDetails(roomId);
+        if(!roomDetails) return ;
+        this.roomService.removeRoomDetils(roomId);
+        setTimeout(() => {
+            this.addUser(roomDetails.user1.socket , roomDetails.user1.userName);
+            this.addUser(roomDetails.user2.socket , roomDetails.user2.userName);
+        }, 3000);
+    } 
+    
+    addOneUser( roomId : string , socket : string ) : void {
+        let roomDetails : Room | undefined = this.roomService.getRoomDetails(roomId);
+        if(!roomDetails) return ;
+        this.roomService.removeRoomDetils(roomId);
+        setTimeout(() => {
+            if(roomDetails.user1.socket === socket){
+                this.addUser(roomDetails.user2.socket , roomDetails.user2.userName);
+            }else if(roomDetails.user2.socket === socket){
+                this.addUser(roomDetails.user1.socket , roomDetails.user1.userName);
+            }
+        }, 3000);
+    }
+    
+
     
     removeRoom(socket : string , userService : UserService , disconnected : boolean = false) : void {
         let roomId : string | null = this.roomService.getRoomBySocket(socket);

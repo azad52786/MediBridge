@@ -14,9 +14,13 @@ export const handleMatchmakingEvents = (io: Server, socket: Socket ,  userServic
         userService.addNextUser(socket.id, remoteSocket , roomId);
         
     })
+    
+    socket.on("call:stop", ({roomId}) => {
+        userService.addOneUser(roomId , socket.id);
+    });
 
     socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`);
-        userService.removeRoom(socket.id , userService ,  true );
+        userService.removeRoom(socket.id , userService ,  true);
     });
 };

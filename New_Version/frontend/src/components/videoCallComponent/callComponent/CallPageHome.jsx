@@ -14,6 +14,7 @@ import {
   findTracksHandler,
   muteAndUnmuteHandeler,
 } from "../../../utils/handelerFunction";
+import { toast } from "react-toastify";
 const CallPageHome = () => {
   const { currentAudioDevice, currentVideoDevice, isAudioMute, isVideoMute } =
     useStreamContext();
@@ -28,6 +29,27 @@ const CallPageHome = () => {
   const [peer, setPeer] = useState(null);
   const socket = useSocket();
   const remoteUserIdRef = useRef(null);
+  
+    const sendStream = useCallback(() => {
+    console.log("sending stream");
+    if (localStream) {
+      const existingSenders = peer.peer.getSenders();
+
+      for (let track of localStream.getTracks()) {
+        const isTrackAlreadyAdded = existingSenders.some(
+          (sender) => sender.track === track
+        );
+
+        if (!isTrackAlreadyAdded) {
+          console.log("Adding new track:", track);
+          peer.peer.addTrack(track, localStream);
+        } else {
+          console.log("Track already added:", track);
+        }
+      }
+    }
+  }, [localStream , peer]);
+
 
   const sendOffer = useCallback(
     async ({ roomId, remoteUserName, remoteSocketId }) => {
@@ -57,32 +79,12 @@ const CallPageHome = () => {
       setRoomId(roomId);
       console.log("answer creating", offer);
       const answer = await peer.getAnswer(offer);
-      // do from here
       console.log("ans in calling page ", answer);
       socket.emit("call:accepted", { to: remoteSocketId, answer });
     },
     [peer, socket, setRoomId, setRemoteUserDetails]
   );
   
-   const sendStream = useCallback(() => {
-    console.log("sending stream");
-    if (localStream) {
-      const existingSenders = peer.peer.getSenders();
-
-      for (let track of localStream.getTracks()) {
-        const isTrackAlreadyAdded = existingSenders.some(
-          (sender) => sender.track === track
-        );
-
-        if (!isTrackAlreadyAdded) {
-          console.log("Adding new track:", track);
-          peer.peer.addTrack(track, localStream);
-        } else {
-          console.log("Track already added:", track);
-        }
-      }
-    }
-  }, [localStream]);
 
   const callAccepted = useCallback(
     async ({ answer }) => {
@@ -95,6 +97,11 @@ const CallPageHome = () => {
   );
   const startCallingHandeler = () => {
     console.log("calling Again...");
+    // it's not check for first time .. it's for stop -> then start 
+    if(peer && peer.peer === null){
+      console.log("peer.peer is null");
+      setPeer(null);
+    }
     socket.emit("call:request", { name });
   };
 
@@ -158,7 +165,7 @@ const CallPageHome = () => {
       remoteUserIdRef.current = remoteUserDetails.remoteSocketId;
   }, [remoteUserDetails]);
   useEffect(() => {
-    if (!peer) {
+    if (!peer || !peer?.peer) {
       console.log("It's new peer connection");
       let newPeerConnection = new PeerService();
       setPeer(newPeerConnection);
@@ -166,7 +173,7 @@ const CallPageHome = () => {
     }
     /// skip is pending
     console.log("adding all of these theing for new peer connection");
-    if (peer) {
+    if (peer && peer.peer) {
       console.log("event added");
       peer.peer.onconnectionstatechange = (event) => {
         const connectionState = peer.peer.connectionState;
@@ -179,24 +186,36 @@ const CallPageHome = () => {
             setPeer(null);
             break;
           case "failed":
+            // toast("Next Match");
+            
             console.log(peer);
+            console.log(localStream)
+           // why suddenly localstream is null here  
+            console.log(localStream)
             console.error(
               "Connection failed. Please check the network or configuration."
             );
             break;
           case "closed":
+            // when anyone stop the peer connection 
+            // peer.disconnectPeer();
             console.log("Connection closed.");
             break;
           default:
             console.log("Connection state:", connectionState);
         }
       };
+      
+      peer.peer.onclose = (ev) => {
+        console.log("Connection closed");
+      }
 
       peer.peer.onnegotiationneeded = negotiationHandeler;
 
       peer.peer.ontrack = (ev) => {
         const remoteStream = ev.streams;
         if (remoteStream.length < 1) return;
+        console.log("tracks came in: " + remoteStream[0])
         setRemoteStream(remoteStream[0]);
       };
     }
@@ -270,7 +289,7 @@ const CallPageHome = () => {
     }
   }, [localStream]);
   useEffect(() => {
-    sendStream();
+    if(remoteStream) sendStream();
     if (remoteStream && remotevideoRef.current) {
       remotevideoRef.current.srcObject = remoteStream;
       remotevideoRef.current.onloadedmetadata = () => {
@@ -282,12 +301,26 @@ const CallPageHome = () => {
   }, [remoteStream]);
   return (
     <div>
+    <div onClick={() => {
+      toast('🦄 Wow so easy!');
+    }}>toast Btn</div>
       <div className="bg-button-record px-2" onClick={startCallingHandeler}>
         This is Call page
       </div>
-      <div className="bg-button-record px-2  mt-3" onClick={skipHandeler}>
-        skip
+      {
+        remoteStream && <div className="bg-button-record px-2  mt-3" onClick={() => {
+        peer.peer.close();
+        socket.emit("call:stop", {
+          roomId,
+        });
+        peer.peer = null;
+        // reset all useState
+        setRemoteStream(null);
+      }}>
+        stop Calling
       </div>
+      }
+      
       {localStream && (
         <video
           className="w-full h-full rounded-md"
