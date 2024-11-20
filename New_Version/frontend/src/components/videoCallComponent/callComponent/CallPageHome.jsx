@@ -95,15 +95,16 @@ const CallPageHome = () => {
     },
     [peer, localStream , sendStream]
   );
-  const startCallingHandeler = () => {
+  const startCallingHandeler = useCallback(() => {
     console.log("calling Again...");
     // it's not check for first time .. it's for stop -> then start 
     if(peer && peer.peer === null){
       console.log("peer.peer is null");
       setPeer(null);
     }
+    console.log(peer)
     socket.emit("call:request", { name });
-  };
+  } , [peer , socket , setPeer , name]);
 
   const negotiationHandeler = useCallback(async () => {
     const offer = await peer.getOffer();
@@ -145,18 +146,17 @@ const CallPageHome = () => {
     // startCallingHandeler();
   }, []);
 
-  const skipHandeler = () => {
+
+  const skipAndNewCallHandeler = useCallback(() => {
+    console.log("skipAndNewCallHandeler");
+    if(peer && peer?.peer){
+      peer.peer.close();
+      peer.peer = null;
+    }
+    // // reset all useState
     setRemoteStream(null);
-    peer.disconnectPeer();
-    peer = null;
-    socket.emit("newConnection", {
-      name,
-      remoteSocket: remoteUserDetails?.remoteSocketId,
-      roomId,
-    });
-    setRoomId(null);
-    setRemoteUserDetails(null);
-  };
+    startCallingHandeler();
+  } , [peer , setRemoteStream , startCallingHandeler])
 
  
 
@@ -229,6 +229,7 @@ const CallPageHome = () => {
     socket.on("negotiation:final", negotiationFinalHandeler);
     socket.on("make:new:peer", disconnectPeerHandeler);
     socket.on("connection:end", disconnectHandeler);
+    socket.on("please:join:for:new:call" , skipAndNewCallHandeler);
 
     return () => {
       socket.off("match:done", sendOffer);
@@ -238,6 +239,7 @@ const CallPageHome = () => {
       socket.off("negotiation:final", negotiationFinalHandeler);
       socket.off("make:new:peer", disconnectPeerHandeler);
       socket.off("connection:end", disconnectHandeler);
+      socket.off("please:join:for:new:call" , skipAndNewCallHandeler);
     };
   }, [
     socket,
@@ -248,6 +250,7 @@ const CallPageHome = () => {
     negotiationFinalHandeler,
     disconnectPeerHandeler,
     disconnectHandeler,
+    skipAndNewCallHandeler
   ]);
   useEffect(() => {
     const initializeStream = async () => {

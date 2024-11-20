@@ -13,7 +13,6 @@ export const handleSignalingEvents = (io: Server, socket: Socket ,  userService 
 
     socket.on("call:accepted", ({ to, answer }) => {
         io.to(to).emit("call:accepted:done", { answer });
-        console.log("Call accepted" , answer);
     });
 
     socket.on("negotiation:handshake", ({ to , offer }) => {

@@ -24,7 +24,7 @@ io.on('connection', (socket : Socket) => {
     // Register matchmaking events
     handleMatchmakingEvents(io, socket , userService);
 
-    // Register signaling events
+    // Register signalling events
     handleSignalingEvents(io, socket , userService);
 });
 

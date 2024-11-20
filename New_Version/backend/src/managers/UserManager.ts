@@ -1,5 +1,6 @@
 // import { Socket } from "socket.io";
 
+import { io } from "..";
 import { Room } from "../models/room.instance";
 import { User } from "../models/user.interface";
 import { findOtherSocketId } from "../utils/helperFunction";
@@ -31,9 +32,20 @@ export class UserService {
             console.log("you're already inside queue!");
             return;
         }
-        if(this.roomService.findOtherSocketId(socket)) {
-            console.log("user already added")
-            return ;
+        let alreadyJoinedroomId = this.roomService.getRoomBySocket(socket);
+        if(alreadyJoinedroomId) {
+            console.log("user already added && call for Skip this Call");
+            let roomDetails : Room | undefined = this.roomService.getRoomDetails(alreadyJoinedroomId);
+            if(roomDetails) {
+                this.roomService.removeRoomDetils(alreadyJoinedroomId);
+            }
+            let user1Socket = roomDetails?.user1.socket;
+            let user2Socket = roomDetails?.user2.socket;
+            console.log("first userID " , user1Socket)
+            console.log("Second userId " , user2Socket)
+            if(user1Socket) io.to(user1Socket).emit("please:join:for:new:call");
+            if(user2Socket) io.to(user2Socket).emit("please:join:for:new:call");
+            return;
         }
         this.queue.push({socket , userName});
         console.log('User added: ' + userName);
