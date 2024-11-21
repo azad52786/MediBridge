@@ -11,7 +11,7 @@ export const useSocket = () => {
 
 
 const SocketContext = ({children}) => {
-  const socket = useMemo(() => io("localhost:3000") , [])
+  const socket = useMemo(() => io("http://localhost:3000") , [])
   return (
     <SocketProvidor.Provider value={socket}>
     {children}
