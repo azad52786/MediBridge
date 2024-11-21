@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import { UserService } from './managers/UserManager';
 import { handleMatchmakingEvents } from './events/matchmaking';
 import { handleSignalingEvents } from './events/signaling';
+import { handleChatEvents } from './events/chatEvents';
 const app = express();
 const server = http.createServer(app);
 
@@ -26,6 +27,10 @@ io.on('connection', (socket : Socket) => {
 
     // Register signalling events
     handleSignalingEvents(io, socket , userService);
+    
+    // Register Chat Events
+    handleChatEvents(io , socket);
+    
 });
 
 

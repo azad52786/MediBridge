@@ -69,10 +69,10 @@ export class UserService {
         let roomDetails : Room | undefined = this.roomService.getRoomDetails(roomId);
         if(!roomDetails) return ;
         this.roomService.removeRoomDetils(roomId);
-        setTimeout(() => {
+        // setTimeout(() => {
             this.addUser(roomDetails.user1.socket , roomDetails.user1.userName);
             this.addUser(roomDetails.user2.socket , roomDetails.user2.userName);
-        }, 3000);
+        // }, 3000);
     } 
     
     addOneUser( roomId : string , socket : string ) : void {
@@ -85,7 +85,7 @@ export class UserService {
             }else if(roomDetails.user2.socket === socket){
                 this.addUser(roomDetails.user1.socket , roomDetails.user1.userName);
             }
-        }, 3000);
+        }, 1000);
     }
     
 
