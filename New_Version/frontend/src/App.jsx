@@ -12,7 +12,7 @@ function App() {
   console.log("Came in Home Page");
 
   return (
-  <div className=" w-full h-full">
+  <div className=" w-screen h-full">
     <Outlet />
   </div>
   );

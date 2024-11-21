@@ -5,7 +5,7 @@ import StreamContext from "../Context/StreamContext";
 
 const Studio = () => {
   return (
-    <div>
+    <div className=" w-full h-full">
       <StreamContext>
         <SocketContext>
           <Outlet />

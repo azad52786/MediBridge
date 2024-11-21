@@ -147,8 +147,8 @@ const StudioHome = () => {
   }, [localStream]);
 
   return (
-    <div className=" w-fit h-full flex items-center justify-center">
-      <div className="w-[85%] grid grid-cols-2 gap-10">
+    <div className=" w-full h-full flex items-center justify-center">
+      <div className="w-[60%] grid grid-cols-2 gap-10">
         <LeftSideBarComponent localStream={localStream} />
         <div className=" w-full bg-[#1D1D1D] p-4 rounded-md">
           <div className=" w-full rounded-md">
