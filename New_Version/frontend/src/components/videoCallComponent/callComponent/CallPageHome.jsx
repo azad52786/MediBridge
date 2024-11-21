@@ -5,32 +5,42 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSocket } from "../../../Context/SocketContext";
 import { useStreamContext } from "../../../Context/StreamContext";
 import { PeerService } from "../../../service/peer";
-import { TRACKS } from "../../../utils/constant";
+import { ALL_CALL_MENU_BAR_ITEMS, TRACKS } from "../../../utils/constant";
 import {
   findTracksHandler,
   muteAndUnmuteHandeler,
 } from "../../../utils/handelerFunction";
 import { toast } from "react-toastify";
+import Spinner from "../../core/Spinner";
+import { CiMicrophoneOn, CiMicrophoneOff } from "react-icons/ci";
+import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
+import ChatSection from "./ChatSection";
+import { BsChatText } from "react-icons/bs";
+import MenuSidebar from "./MenuSidebar";
+
 const CallPageHome = () => {
-  const { currentAudioDevice, currentVideoDevice, isAudioMute, isVideoMute } =
+  const { currentAudioDevice, currentVideoDevice, isAudioMute, isVideoMute , setIsAudioMute , setIsVideoMute } =
     useStreamContext();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const name = searchParams.get("userName");
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const name = searchParams.get("userName");
   const [roomId, setRoomId] = useState(null);
-  const localvideoRef = useRef("");
-  const remotevideoRef = useRef("");
+  const [allChat, setAllChat] = useState([]);
   const [remoteUserDetails, setRemoteUserDetails] = useState(null);
   const [peer, setPeer] = useState(null);
+  const [currentMenuItem , setCurrentMenuItem] = useState(ALL_CALL_MENU_BAR_ITEMS.CHAT);
+  const localvideoRef = useRef("");
+  const remotevideoRef = useRef("");
   const socket = useSocket();
   const remoteUserIdRef = useRef(null);
-  
-    const sendStream = useCallback(() => {
+  const navigate = useNavigate();
+
+  const sendStream = useCallback(() => {
     console.log("sending stream");
     if (localStream) {
       const existingSenders = peer.peer.getSenders();
@@ -48,8 +58,7 @@ const CallPageHome = () => {
         }
       }
     }
-  }, [localStream , peer]);
-
+  }, [localStream, peer]);
 
   const sendOffer = useCallback(
     async ({ roomId, remoteUserName, remoteSocketId }) => {
@@ -61,6 +70,8 @@ const CallPageHome = () => {
       });
       console.log("remoteusedetails updated");
       console.log(peer);
+      // cross checking of peer before creating new connection
+      // if(!peer || !peer.peer) setPeer(null);
       const offer = await peer.getOffer();
       console.log("offer is ", offer);
       socket.emit("call:offer", {
@@ -84,27 +95,26 @@ const CallPageHome = () => {
     },
     [peer, socket, setRoomId, setRemoteUserDetails]
   );
-  
 
   const callAccepted = useCallback(
     async ({ answer }) => {
       console.log("setting remote desc by user 1", answer);
       await peer.setRemoteDesc(answer);
-     sendStream()
+      sendStream();
       console.log("Connection Done");
     },
-    [peer, localStream , sendStream]
+    [peer, localStream, sendStream]
   );
   const startCallingHandeler = useCallback(() => {
     console.log("calling Again...");
-    // it's not check for first time .. it's for stop -> then start 
-    if(peer && peer.peer === null){
+    // it's not check for first time .. it's for stop -> then start
+    if (peer && peer.peer === null) {
       console.log("peer.peer is null");
       setPeer(null);
     }
-    console.log(peer)
+    console.log(peer);
     socket.emit("call:request", { name });
-  } , [peer , socket , setPeer , name]);
+  }, [peer, socket, setPeer, name]);
 
   const negotiationHandeler = useCallback(async () => {
     const offer = await peer.getOffer();
@@ -146,19 +156,33 @@ const CallPageHome = () => {
     // startCallingHandeler();
   }, []);
 
-
   const skipAndNewCallHandeler = useCallback(() => {
     console.log("skipAndNewCallHandeler");
-    if(peer && peer?.peer){
+    if (peer && peer?.peer) {
       peer.peer.close();
       peer.peer = null;
+      console.log("peer closed");
     }
     // // reset all useState
     setRemoteStream(null);
     startCallingHandeler();
-  } , [peer , setRemoteStream , startCallingHandeler])
+  }, [peer, setRemoteStream, startCallingHandeler]);
 
- 
+  const stopCallHandeler = useCallback(() => {
+    if (!remoteStream) return;
+    peer.peer.close();
+    socket.emit("call:stop", {
+      roomId,
+    });
+    peer.peer = null;
+    // reset all useState
+    setRemoteStream(null);
+  }, [socket, remoteStream, peer, roomId, setRemoteStream]);
+
+  useEffect(() => {
+    if (!currentAudioDevice || !currentVideoDevice) navigate("/studio");
+    toast("🦄 Press next and wait...");
+  }, []);
 
   useEffect(() => {
     if (remoteUserDetails)
@@ -183,21 +207,22 @@ const CallPageHome = () => {
             break;
           case "disconnected":
             console.log("Peer disconnected.");
+            setRemoteStream(null);
             setPeer(null);
             break;
           case "failed":
             // toast("Next Match");
-            
+
             console.log(peer);
-            console.log(localStream)
-           // why suddenly localstream is null here  
-            console.log(localStream)
+            console.log(localStream);
+            // why suddenly localstream is null here
+            console.log(localStream);
             console.error(
               "Connection failed. Please check the network or configuration."
             );
             break;
           case "closed":
-            // when anyone stop the peer connection 
+            // when anyone closed stop the peer connection
             // peer.disconnectPeer();
             console.log("Connection closed.");
             break;
@@ -205,17 +230,17 @@ const CallPageHome = () => {
             console.log("Connection state:", connectionState);
         }
       };
-      
+
       peer.peer.onclose = (ev) => {
         console.log("Connection closed");
-      }
+      };
 
       peer.peer.onnegotiationneeded = negotiationHandeler;
 
       peer.peer.ontrack = (ev) => {
         const remoteStream = ev.streams;
         if (remoteStream.length < 1) return;
-        console.log("tracks came in: " + remoteStream[0])
+        console.log("tracks came in: " + remoteStream[0]);
         setRemoteStream(remoteStream[0]);
       };
     }
@@ -229,7 +254,7 @@ const CallPageHome = () => {
     socket.on("negotiation:final", negotiationFinalHandeler);
     socket.on("make:new:peer", disconnectPeerHandeler);
     socket.on("connection:end", disconnectHandeler);
-    socket.on("please:join:for:new:call" , skipAndNewCallHandeler);
+    socket.on("please:join:for:new:call", skipAndNewCallHandeler);
 
     return () => {
       socket.off("match:done", sendOffer);
@@ -239,7 +264,7 @@ const CallPageHome = () => {
       socket.off("negotiation:final", negotiationFinalHandeler);
       socket.off("make:new:peer", disconnectPeerHandeler);
       socket.off("connection:end", disconnectHandeler);
-      socket.off("please:join:for:new:call" , skipAndNewCallHandeler);
+      socket.off("please:join:for:new:call", skipAndNewCallHandeler);
     };
   }, [
     socket,
@@ -250,7 +275,7 @@ const CallPageHome = () => {
     negotiationFinalHandeler,
     disconnectPeerHandeler,
     disconnectHandeler,
-    skipAndNewCallHandeler
+    skipAndNewCallHandeler,
   ]);
   useEffect(() => {
     const initializeStream = async () => {
@@ -265,8 +290,12 @@ const CallPageHome = () => {
             ? { deviceId: { exact: currentVideoDevice.deviceId } }
             : true,
         });
+        // const newStream = null;
 
-        if (!newStream) return;
+        if (!newStream) {
+          navigate("/studio");
+          return;
+        }
 
         const audioTrack = findTracksHandler(newStream, TRACKS.AUDIO_TRACK);
         const videoTrack = findTracksHandler(newStream, TRACKS.VIDEO_TRACK);
@@ -292,7 +321,7 @@ const CallPageHome = () => {
     }
   }, [localStream]);
   useEffect(() => {
-    if(remoteStream) sendStream();
+    if (remoteStream) sendStream();
     if (remoteStream && remotevideoRef.current) {
       remotevideoRef.current.srcObject = remoteStream;
       remotevideoRef.current.onloadedmetadata = () => {
@@ -302,57 +331,175 @@ const CallPageHome = () => {
       };
     }
   }, [remoteStream]);
+  
+  const CALL_SIDE_BAR_MENU_ITEMS = [
+    {
+      title : "chat" , 
+      icon : <BsChatText className=" w-7 h-7"/>
+    }
+  ]
   return (
-    <div>
-    <div onClick={() => {
-      toast('🦄 Wow so easy!');
-    }}>toast Btn</div>
-      <div className="bg-button-record px-2" onClick={startCallingHandeler}>
-        This is Call page
+    // <div>
+    // <div onClick={() => {
+    //   toast('🦄 Wow so easy!');
+    // }}>toast Btn</div>
+    //   <div className="bg-button-record px-2" onClick={startCallingHandeler}>
+    //     This is Call page
+    //   </div>
+    //   {
+    //     remoteStream && <div className="bg-button-record px-2  mt-3" onClick={stopCallHandeler}>
+    //     stop Calling
+    //   </div>
+    //   }
+
+    //   {localStream && (
+    // <video
+    //   className="w-full h-full rounded-md"
+    //   ref={localvideoRef}
+    //   autoPlay
+    //   muted
+    //   playsInline
+    //   style={{
+    //     transform: "scale(-1, 1)",
+    //     width: "100%",
+    //     height: "100%",
+    //     objectFit: "cover",
+    //   }}
+    // ></video>
+    //   )}
+    // {remoteStream && (
+    // <video
+    //   className="w-fit h-fit rounded-md bg-violate-800"
+    //   ref={remotevideoRef}
+    //   autoPlay
+    //   // playsInline
+    //   style={{
+    //     transform: "scale(-1, 1)",
+    //     width: "100%",
+    //     height: "100%",
+    //     objectFit: "cover",
+    //   }}
+    // ></video>
+    // )}
+    // </div>
+    <div className=" w-full h-screen py-4">
+      {" "}
+      <div className="w-[97%] mx-auto h-full grid grid-cols-[73%_20%_5%] gap-4">
+        <div className=" w-full h-full ">
+          <div className=" w-full h-[7%] pb-1  font-edu-sa text-3xl font-bold">
+            App Name
+          </div>
+          <div
+            className=" w-full flex gap-5 h-[80%] mt-2
+           items-center justify-between"
+          >
+            <div className=" w-[49%] h-full">
+              {localStream ? (
+                <div className=" w-full h-full relative">
+                  <video
+                    className="w-full h-full rounded-md bg-violate-800"
+                    ref={localvideoRef}
+                    autoPlay
+                    muted
+                    playsInline
+                    style={{
+                      transform: "scale(-1, 1)",
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  ></video>
+                  <div className=" font-bold text-3xl font-edu-sa absolute bottom-1 left-2">
+                    {name ? name.substring(0, 30) : ""}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className=" w-full h-full flex
+               items-center justify-center bg-[#242424] rounded-md "
+                >
+                  <Spinner />
+                </div>
+              )}
+            </div>
+            <div className=" w-[49%] h-full">
+              {remoteStream ? (
+                <video
+                  className="w-fit h-fit rounded-md bg-violate-800"
+                  ref={remotevideoRef}
+                  autoPlay
+                  // playsInline
+                  style={{
+                    transform: "scale(-1, 1)",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                ></video>
+              ) : (
+                <div
+                  className=" w-full h-full flex
+               items-center justify-center bg-[#242424] rounded-md"
+                >
+                  <Spinner />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div
+            className="  bg-[#242424] flex mt-2 rounded-md w-full h-[10%] py-3
+           items-center justify-center gap-10 flex-grow"
+          >
+            <button
+              className=" glow-on-hover font-edu-sa font-bold text-xl"
+              onClick={startCallingHandeler}
+            >
+              {" "}
+              Next{" "}
+            </button>
+            <button
+              className=" glow-on-hover font-edu-sa font-bold text-xl"
+              onClick={stopCallHandeler}
+            >
+              {" "}
+              Stop{" "}
+            </button>
+            <button className=" glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
+              onClick={() => setIsVideoMute(pre => {
+                          let videoTracks = findTracksHandler(localStream , TRACKS.VIDEO_TRACK);
+                          muteAndUnmuteHandeler(videoTracks  , pre);
+                          return !pre;
+                        })}
+            >
+              {" "}
+              {isVideoMute ? (
+                <IoVideocamOffOutline className=" w-7 h-7" />
+              ) : (
+                <IoVideocamOutline className=" w-7 h-7" />
+              )}
+            </button>
+            <button className=" glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
+              onClick={() => setIsAudioMute(pre => {
+                          let audioTracks = findTracksHandler(localStream , TRACKS.AUDIO_TRACK);
+                          muteAndUnmuteHandeler(audioTracks , pre);
+                          return !pre;
+                        })}
+            >
+              {" "}
+              {isAudioMute ? (
+                <CiMicrophoneOff className=" w-7 h-7" />
+              ) : (
+                <CiMicrophoneOn className=" w-7 h-7" />
+              )}
+            </button>
+          </div>
+          <div></div>
+        </div>
+        <ChatSection peer={peer} roomId={roomId} setAllChat={setAllChat} socket={socket} allChat={allChat} remoteUserIdRef={remoteUserIdRef} />
+        
+          <MenuSidebar currentMenuItem = {currentMenuItem}  setCurrentMenuItem = {setCurrentMenuItem}/>
       </div>
-      {
-        remoteStream && <div className="bg-button-record px-2  mt-3" onClick={() => {
-        peer.peer.close();
-        socket.emit("call:stop", {
-          roomId,
-        });
-        peer.peer = null;
-        // reset all useState
-        setRemoteStream(null);
-      }}>
-        stop Calling
-      </div>
-      }
-      
-      {localStream && (
-        <video
-          className="w-full h-full rounded-md"
-          ref={localvideoRef}
-          autoPlay
-          muted
-          playsInline
-          style={{
-            transform: "scale(-1, 1)",
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        ></video>
-      )}
-      {remoteStream && (
-        <video
-          className="w-fit h-fit rounded-md bg-violate-800"
-          ref={remotevideoRef}
-          autoPlay
-          // playsInline
-          style={{
-            transform: "scale(-1, 1)",
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        ></video>
-      )}
     </div>
   );
 };
