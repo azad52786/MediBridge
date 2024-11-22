@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import "./App.css";
 import { Outlet, useLocation } from "react-router-dom";
-import NavbarHome from "./components/navbar/navbarHome";
+import NavbarHome from "./components/navbar/NavbarHome";
 
 
 function App() {
