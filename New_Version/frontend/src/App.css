@@ -10,7 +10,11 @@
   padding: 2rem;
   text-align: center;
 } */
-
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing:  border-box;
+}
 
 .glow-on-hover{
     width: 70px;

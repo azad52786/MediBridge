@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
 
 import "./App.css";
-import { Outlet } from "react-router-dom";
-import { useSocket } from "./Context/SocketContext";
+import { Outlet, useLocation } from "react-router-dom";
+import NavbarHome from "./components/navbar/navbarHome";
 
 
 function App() {
-  const [count, setCount] = useState(0);
-  const socket = useSocket();
-  
+  const location = useLocation();
+  const [showNavBar , setShowNavBar ] = useState(true);
   console.log("Came in Home Page");
-
+  useEffect(() => {
+    if(location.pathname == '/studio' || location.pathname == '/studio/call'){
+      setShowNavBar(false);
+    }else{
+      setShowNavBar(true);  
+    }
+  } , [location.pathname]);
   return (
-  <div className=" w-screen h-full">
+  <div className=" w-screen min-h-screen overflow-x-hidden">
+  {
+    showNavBar && 
+  <NavbarHome/>
+  }
     <Outlet />
   </div>
   );

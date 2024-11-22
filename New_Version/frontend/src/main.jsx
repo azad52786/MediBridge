@@ -17,6 +17,14 @@ const routeProvider = createBrowserRouter([
       { 
         path : '' , 
         element: <Home /> 
+      } ,
+      {
+        path : "/about" , 
+        element: <h1>About Page</h1> 
+      }, 
+      {
+        path : "/contact-us" , 
+        element: <h1>Contact Page</h1>
       } , 
       {
         path: "/studio",
