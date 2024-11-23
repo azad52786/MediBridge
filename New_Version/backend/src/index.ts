@@ -6,6 +6,8 @@ import { UserService } from './managers/UserManager';
 import { handleMatchmakingEvents } from './events/matchmaking';
 import { handleSignalingEvents } from './events/signaling';
 import { handleChatEvents } from './events/chatEvents';
+import dotenv from 'dotenv';
+dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
@@ -35,6 +37,7 @@ io.on('connection', (socket : Socket) => {
 
 
 const PORT = process.env.PORT || 3000;
+console.log(process.env.PORT);
 
 app.get('/', (req, res) => {
   res.send('Hello, TypeScript!');
