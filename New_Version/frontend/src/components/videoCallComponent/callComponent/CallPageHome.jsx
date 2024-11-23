@@ -339,49 +339,7 @@ const CallPageHome = () => {
     }
   ]
   return (
-    // <div>
-    // <div onClick={() => {
-    //   toast('🦄 Wow so easy!');
-    // }}>toast Btn</div>
-    //   <div className="bg-button-record px-2" onClick={startCallingHandeler}>
-    //     This is Call page
-    //   </div>
-    //   {
-    //     remoteStream && <div className="bg-button-record px-2  mt-3" onClick={stopCallHandeler}>
-    //     stop Calling
-    //   </div>
-    //   }
 
-    //   {localStream && (
-    // <video
-    //   className="w-full h-full rounded-md"
-    //   ref={localvideoRef}
-    //   autoPlay
-    //   muted
-    //   playsInline
-    //   style={{
-    //     transform: "scale(-1, 1)",
-    //     width: "100%",
-    //     height: "100%",
-    //     objectFit: "cover",
-    //   }}
-    // ></video>
-    //   )}
-    // {remoteStream && (
-    // <video
-    //   className="w-fit h-fit rounded-md bg-violate-800"
-    //   ref={remotevideoRef}
-    //   autoPlay
-    //   // playsInline
-    //   style={{
-    //     transform: "scale(-1, 1)",
-    //     width: "100%",
-    //     height: "100%",
-    //     objectFit: "cover",
-    //   }}
-    // ></video>
-    // )}
-    // </div>
     <div className=" w-full h-screen py-4">
       {" "}
       <div className="w-[97%] mx-auto h-full grid grid-cols-[73%_20%_5%] gap-4">
@@ -397,15 +355,14 @@ const CallPageHome = () => {
               {localStream ? (
                 <div className=" w-full h-full relative">
                   <video
-                    className="w-full h-full rounded-md bg-violate-800"
+                    className="w-full h-full overflow-hidden rounded-md bg-violate-800"
                     ref={localvideoRef}
                     autoPlay
                     muted
                     playsInline
                     style={{
                       transform: "scale(-1, 1)",
-                      width: "100%",
-                      height: "100%",
+                      objectPosition : "center" , 
                       objectFit: "cover",
                     }}
                   ></video>
@@ -425,14 +382,13 @@ const CallPageHome = () => {
             <div className=" w-[49%] h-full">
               {remoteStream ? (
                 <video
-                  className="w-fit h-fit rounded-md bg-violate-800"
+                  className="w-full h-full overflow-hidden rounded-md bg-violate-800"
                   ref={remotevideoRef}
                   autoPlay
                   // playsInline
                   style={{
                     transform: "scale(-1, 1)",
-                    width: "100%",
-                    height: "100%",
+                    objectPosition : "center" ,  
                     objectFit: "cover",
                   }}
                 ></video>
