@@ -11,7 +11,8 @@ export const useSocket = () => {
 
 
 const SocketContext = ({children}) => {
-  const socket = useMemo(() => io("http://localhost:3000") , [])
+  // const socket = useMemo(() => io("http://localhost:3000") , []);
+  const socket = useMemo(() => io("https://liveloop-h6no.onrender.com") , []);
   return (
     <SocketProvidor.Provider value={socket}>
     {children}
