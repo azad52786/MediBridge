@@ -20,11 +20,11 @@ const routeProvider = createBrowserRouter([
       } ,
       {
         path : "/about" , 
-        element: <h1>About Page</h1> 
+        element: <h1 className=" w-screen h-screen flex items-center justify-center">About Page</h1> 
       }, 
       {
         path : "/contact-us" , 
-        element: <h1>Contact Page</h1>
+        element: <h1 className=" w-screen h-screen flex items-center justify-center">Contact Page</h1>
       } , 
       {
         path: "/studio",

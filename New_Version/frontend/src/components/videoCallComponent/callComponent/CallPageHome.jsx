@@ -382,6 +382,7 @@ const CallPageHome = () => {
             <div className=" w-[49%] h-full">
               {remoteStream ? (
                 <video
+                // something wrong heppening here fix height of the video 
                   className="w-full h-full overflow-hidden rounded-md bg-violate-800"
                   ref={remotevideoRef}
                   autoPlay

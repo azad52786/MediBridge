@@ -16,6 +16,13 @@
   box-sizing:  border-box;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+
 .glow-on-hover{
     width: 70px;
     height: 50px;
@@ -79,3 +86,55 @@
 .chat-scroll-bar::-webkit-scrollbar {
   display: none; 
 }
+
+
+.rotate-div{
+   animation: rotation 20s linear infinite;
+}
+.rotate-div-reverse {
+   animation: rotation-reverse 20s linear infinite;
+}
+
+.rotate-img {
+   animation: rotate-img 10s linear infinite;
+}
+
+.rotate-img-reverse {
+   animation: rotate-img-reverse 10s linear infinite;
+}
+
+
+@keyframes rotate-img-reverse {
+   from {
+      transform: rotate(360deg);
+   }
+   to {
+      transform: rotate(0deg);
+   }
+}
+@keyframes rotate-img {
+   from {
+      transform: rotate(0deg);
+   }
+   to {
+      transform: rotate(360deg);
+   }
+}
+
+
+
+@keyframes rotation-reverse {
+   from {
+      transform: rotate(360deg);
+   }
+   to {
+      transform: rotate(0deg);
+   }
+}
+
+@keyframes rotation{
+    100% {
+      transform: rotate(360deg);
+    }
+}
+

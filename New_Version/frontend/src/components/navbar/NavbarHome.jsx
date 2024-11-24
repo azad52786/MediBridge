@@ -5,9 +5,9 @@ import { NavLink } from "react-router-dom";
 
 const NavbarHome = () => {
   return (
-    <div className=" relative">
+    <div className=" ">
       <div
-        className=" absolute left-[10%] font-edu-sa top-5 rounded-full z-30 bg-transparent backdrop-blur-sm 
+        className=" fixed left-[10%] font-edu-sa top-5 rounded-full z-30 bg-transparent backdrop-blur-sm 
         w-[80%] h-20 border lg:bg-white lg:bg-opacity-10 border-purple-300 flex py-2 px-2 items-center justify-between"
       >
         <div className="h-full overflow-hidden gap-2 w-fit flex">
