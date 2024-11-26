@@ -21,7 +21,7 @@ const HomePageHome = () => {
     <div className=" w-full h-full  bg-[#18181B] overflow-hidden">
       {/* bg-[#18181B] */}
       <div className=" w-[80%] mx-auto h-full">
-        <div className=" w-full h-[50vh] lg:h-screen relative">
+        <div className=" w-full h-[60vh] md:h-screen relative">
           <img
             src={heroImage}
             alt="backgrounImage"
@@ -29,10 +29,10 @@ const HomePageHome = () => {
             height={550}
             className=" absolute top-[60%] rounded-full left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
           />
-          <div className=" relative z-20  w-full h-full flex 
-          gap-3 flex-col justify-center items-center ">
+          <div className=" relative pt-20 md:pt-0  z-20  w-full h-full flex 
+          md:gap-3 flex-col justify-center items-center ">
             <div className=" w-full h-fit p-3 
-              flex flex-col items-center justify-center gap-y-2">
+              flex flex-col items-center justify-center md:gap-y-2">
               <p
                 className=" text-lg md:text-6xl font-edu-sa
                  font-bold block"
@@ -84,7 +84,7 @@ const HomePageHome = () => {
             </div>
             <div className=" md:px-10 lg:px-[5rem] mt-1 text-center">
               <h1
-                className=" font-semibold text-3xl font-edu-sa "
+                className=" font-semibold text-lg md:text-3xl font-edu-sa "
                 style={{
                   backgroundImage:
                     "linear-gradient(to right,#28c76f 0%,#5a4aff 47.92%,#ff3739 100%)",
@@ -97,16 +97,17 @@ const HomePageHome = () => {
             </div>
             <Link to={"/studio"}>
               {" "}
-              <button className=" mt-7 px-4 py-3 rounded-md bg-violate-600 font-edu-sa hover:scale-100 scale-90 transition-all duration-300">
+              <button className=" mt-7 md:px-4 md:py-3 py-1 px-2 rounded-md bg-violate-600 font-edu-sa hover:scale-100 scale-90 transition-all duration-300">
                 Let's Start
               </button>
             </Link>
           </div>
         </div>
-        <div className=" mt-32 flex py-12 w-full h-fit items-center min-h-[70vh] font-edu-sa">
-          <div className=" w-1/2 flex flex-col justify-center h-full">
+        <div className=" relative z-20 md:mt-32 flex flex-col lg:flex-row
+        md:py-12 w-full h-fit items-center min-h-[70vh] gap-y-20 lg:gap-y-0 font-edu-sa">
+          <div className=" lg:w-1/2 flex flex-col justify-center h-full">
             <p
-              className=" text-4xl font-bold "
+              className=" text-lg md:text-4xl font-bold "
               style={{
                 backgroundImage:
                   "linear-gradient(to right,#28c76f 0%,#5a4aff 47.92%,#ff3739 100%)",
@@ -117,7 +118,7 @@ const HomePageHome = () => {
               Stay Connected Anytime
             </p>
             <p
-              className=" text-4xl font-bold mb-5 "
+              className=" text-lg md:text-4xl font-bold mb-5 "
               style={{
                 backgroundImage: "linear-gradient(111deg, #5238ff, #a0fbcd)",
                 color: "transparent",
@@ -138,7 +139,7 @@ const HomePageHome = () => {
               })}
             </div>
           </div>
-          <div className=" relative  h-full flex-grow flex items-center justify-center">
+          <div className=" relative  h-full lg:flex-grow flex items-center justify-center">
             <img
               src={bgGradientImage}
               alt="backgrounImage"
@@ -147,7 +148,6 @@ const HomePageHome = () => {
               className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20"
             />
             <LoopSpinner/>
-            
           </div>
         </div>
         <SetUpSection/>

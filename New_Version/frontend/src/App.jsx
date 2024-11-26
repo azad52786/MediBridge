@@ -17,7 +17,7 @@ function App() {
     }
   } , [location.pathname]);
   return (
-  <div className=" w-screen min-h-screen overflow-x-hidden">
+  <div className=" w-screen h-full overflow-x-hidden">
   {
     showNavBar && 
   <NavbarHome/>

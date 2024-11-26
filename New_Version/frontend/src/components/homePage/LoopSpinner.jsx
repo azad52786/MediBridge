@@ -11,48 +11,48 @@ import mainimage from '../../assets/peopleImage/mainimage.jpg'
 
 const LoopSpinner = () => {
   return (
-     <div className=" w-[350px] h-[350px] aspect-square rounded-full relative  flex justify-center items-center">
+     <div className=" w-[250px] md:w-[300px]  lg:w-[350px] lg:h-[350px] aspect-square rounded-full relative  flex justify-center items-center">
               <div class="rotate-div absolute h-full w-full rounded-full border border-dashed border-richblack-300">
                 <img
                   src= {person1}
-                  className="absolute rotate-img -top-5 left-[40%] w-12 aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img -top-5 left-[40%] w-10 lg:w-12 aspect-square bg-violate-500 rounded-full"
                   alt="person1"
                 />
                 <img
                   src={person2}
-                  className="absolute rotate-img w-12 top-[40%] -left-5 aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img w-10 lg:w-12 top-[40%] -left-5 aspect-square bg-violate-500 rounded-full"
                   alt=""
                 />
                 <img
                   src={person3}
-                  className="absolute rotate-img w-12 top-[40%] -right-5 aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img w-10 lg:w-12 top-[40%] -right-5 aspect-square bg-violate-500 rounded-full"
                   alt=""
                 />
                 <img
                   src={person4}
-                  className="absolute rotate-img w-12 -bottom-5 left-[40%] aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img w-10 lg:w-12 -bottom-5 left-[40%] aspect-square bg-violate-500 rounded-full"
                   alt=""
                 />
               </div>
               <div class="rotate-div-reverse absolute h-[60%] w-[60%] rounded-full border border-dashed border-richblack-300">
                 <img
                   src={person5}
-                  className="absolute rotate-img-reverse -top-5 left-[40%] w-12 aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img-reverse -top-5 left-[40%] w-10 lg:w-12 aspect-square bg-violate-500 rounded-full"
                   alt=""
                 />
                 <img
                   src={person6}
-                  className="absolute rotate-img-reverse w-12 top-[40%] -left-5 aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img-reverse w-10 lg:w-12 top-[40%] -left-5 aspect-square bg-violate-500 rounded-full"
                   alt=""
                 />
                 <img
                   src={person7}
-                  className="absolute rotate-img-reverse w-12 top-[40%] -right-5 aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img-reverse w-10 lg:w-12 top-[40%] -right-5 aspect-square bg-violate-500 rounded-full"
                   alt=""
                 />
                <img
                   src={person8}
-                  className="absolute rotate-img-reverse w-12 -bottom-5 left-[40%] aspect-square bg-violate-500 rounded-full"
+                  className="absolute rotate-img-reverse w-10 lg:w-12 -bottom-5 left-[40%] aspect-square bg-violate-500 rounded-full"
                   alt=""
                 />
               </div>

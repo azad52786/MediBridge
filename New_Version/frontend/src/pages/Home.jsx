@@ -4,7 +4,6 @@ import HomePageHome from '../components/homePage/HomePageHome'
 const Home = () => {
   return (
   <>
-      
       <HomePageHome />
   </>
   )

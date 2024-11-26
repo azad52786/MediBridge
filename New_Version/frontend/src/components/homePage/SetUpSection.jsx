@@ -28,7 +28,7 @@ const SetUpSection = () => {
   return (
     <div className=" w-full h-full mt-20 font-edu-sa">
       <p
-        className=" text-4xl font-bold w-full flex items-center justify-center"
+        className=" text-lg md:text-4xl font-bold w-full flex items-center justify-center"
         style={{
           backgroundImage: "linear-gradient(to right, #a855f7, #f43f5e)",
           color: "transparent",
@@ -38,11 +38,11 @@ const SetUpSection = () => {
         From Setup to Connection, Simplified
       </p>
 
-      <div className=" w-full flex flex-col gap-16 mt-20">
+      <div className=" w-full flex flex-col gap-6 md:gap-16 mt-7 md:mt-20">
         {callSetupSteps.map((ele, index) => (
         <>
-          <div className=" flex" key={ele.step}>
-            <div className=" w-[25%] text-3xl font-bold flex gap-4 items-center"
+          <div className=" flex flex-col md:flex-row gap-y-7 md:gap-y-0" key={ele.step}>
+            <div className=" md:w-[25%] text-lg  md:text-3xl font-bold flex gap-4 items-center"
                 style={{
                     backgroundImage : ele.gradient , 
                     color : "transparent" , 
@@ -52,7 +52,7 @@ const SetUpSection = () => {
               <p>{index + 1}.</p>
               <p>{ele.title}</p>
             </div>
-            <div className=" w-[75%] text-richblack-200">{ele.description}</div>
+            <div className=" md:w-[75%] text-richblack-200 md:text-base text-sm">{ele.description}</div>
           </div>
             <div className=" h-[1px] w-full bg-richblack-600"></div></>
         ))}
