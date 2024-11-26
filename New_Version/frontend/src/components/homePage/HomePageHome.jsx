@@ -9,11 +9,19 @@ import SetUpSection from "./SetUpSection";
 // <Link to={'/studio'}><button className=' p-6 bg-violate-600 rounded-md'>Call</button></Link>
 
 const HomePageHome = () => {
+  const fontSize = () => {
+    const width = window.innerWidth;
+    if(width < 480) return "1.2em";
+    if(width < 768) {
+        return "0.5em"
+    }
+    return "2em";
+  }
   return (
-    <div className=" w-full h-fit  bg-[#18181B] overflow-hidden">
+    <div className=" w-full h-full  bg-[#18181B] overflow-hidden">
       {/* bg-[#18181B] */}
       <div className=" w-[80%] mx-auto h-full">
-        <div className=" w-full h-screen relative">
+        <div className=" w-full h-[50vh] lg:h-screen relative">
           <img
             src={heroImage}
             alt="backgrounImage"
@@ -21,10 +29,13 @@ const HomePageHome = () => {
             height={550}
             className=" absolute top-[60%] rounded-full left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
           />
-          <div className=" absolute z-20  w-full h-full flex gap-3 flex-col justify-center items-center ">
-            <div className=" w-full h-fit p-3 flex flex-col items-center justify-center gap-y-2">
+          <div className=" relative z-20  w-full h-full flex 
+          gap-3 flex-col justify-center items-center ">
+            <div className=" w-full h-fit p-3 
+              flex flex-col items-center justify-center gap-y-2">
               <p
-                className="  text-6xl font-edu-sa  font-bold block"
+                className=" text-lg md:text-6xl font-edu-sa
+                 font-bold block"
                 style={{
                   backgroundImage: "linear-gradient(111deg, #f85d7f, #6b81fa)",
                   color: "transparent",
@@ -35,7 +46,7 @@ const HomePageHome = () => {
               </p>
 
               <p
-                className="  text-5xl font-edu-sa  font-bold"
+                className=" text-lg  md:text-5xl font-edu-sa  font-bold"
                 style={{
                   backgroundImage: "linear-gradient(111deg, #5238ff, #a0fbcd)",
                   color: "transparent",
@@ -67,7 +78,7 @@ const HomePageHome = () => {
                   500,
                 ]}
                 speed={50}
-                style={{ fontSize: "2em" }}
+                style={{ fontSize: fontSize() }}
                 repeat={Infinity}
               />
             </div>
@@ -92,7 +103,7 @@ const HomePageHome = () => {
             </Link>
           </div>
         </div>
-        <div className=" flex py-12 w-full h-fit items-center min-h-[70vh] font-edu-sa">
+        <div className=" mt-32 flex py-12 w-full h-fit items-center min-h-[70vh] font-edu-sa">
           <div className=" w-1/2 flex flex-col justify-center h-full">
             <p
               className=" text-4xl font-bold "
