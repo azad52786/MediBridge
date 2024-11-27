@@ -57,17 +57,26 @@ const NavbarHome = () => {
 
         <div className="flex items-center gap-3 ">
         <div className=" block md:hidden relative"
-          // onClick={() => showMobileMenuBar(pre => !pre)}
+          onClick={() => {
+            console.log("hello!");
+            setShowMobileMenuBar(pre => !pre)
+          }}
+          
         >
         
           <CgMenuRightAlt className=" w-8 h-8 cursor-pointer"/>
           {
             showMobileMenuBar && (
-             <ul className=" absolute">
+             <ul className=" absolute text-nowrap justify-center 
+             items-center flex flex-col  bg-richblack-600 text-sm 
+             bg-opacity-55 py-6 gap-2 top-20 -translate-y-10 transition-all
+              duration-700
+             right-0 backdrop-blur-sm rounded-md px-3">
                <NavLink
               to={""}
               className={({ isActive }) => {
-                return isActive ? "text-yellow-5" : "text-grey-600";
+                return isActive ? "text-yellow-5 flex items-center justify-center w-full bg-richblack-500 bg-opacity-35 px-4 py-2 rounded-md"
+                : "text-grey-600 px-4 py-2 rounded-md w-full flex items-center justify-center hover:bg-richblack-800 bg-opacity-25";
               }}
             >
               <li>Home</li>
@@ -75,7 +84,8 @@ const NavbarHome = () => {
             <NavLink
               to={"/about"}
               className={({ isActive }) => {
-                return isActive ? "text-yellow-5" : "text-grey-600";
+                return isActive ? "text-yellow-5 w-full flex items-center justify-center bg-richblack-500 bg-opacity-35 px-4 py-2 rounded-md"
+                : "text-grey-600 px-4 py-2 rounded-md w-full flex items-center justify-center hover:bg-richblack-800 bg-opacity-25";
               }}
             >
               <li>About</li>
@@ -83,7 +93,8 @@ const NavbarHome = () => {
             <NavLink
               to={"/contact-us"}
               className={({ isActive }) => {
-                return isActive ? "text-yellow-5" : "text-grey-600";
+                return isActive ? "text-yellow-5 flex items-center justify-center w-full px-4 py-2 rounded-md bg-richblack-500 bg-opacity-35"
+                : "text-grey-600 px-4 py-2 rounded-md flex items-center justify-center w-full hover:bg-richblack-800 bg-opacity-25";
               }}
             >
               <li>Contect Us</li>
