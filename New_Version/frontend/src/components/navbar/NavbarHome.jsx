@@ -6,7 +6,7 @@ import { CgMenuRightAlt } from "react-icons/cg";
 
 
 const NavbarHome = () => {
-  const [showMobileMenuBar , setShowMobileMenuBar ] = useState(true);
+  const [showMobileMenuBar , setShowMobileMenuBar ] = useState(false);
   return (
     <div className=" ">
       <div
@@ -55,8 +55,17 @@ const NavbarHome = () => {
         </div>
         
 
-        <div className="flex items-center gap-3 ">
-        <div className=" block md:hidden relative"
+        <div className="flex items-center gap-1 mr-3 ">
+        
+          <button
+            className=" flex gap-3 scale-90 hover:scale-100 duration-300 bg-violate-600
+            lg:py-2 lg:px-4 py-1 px-2
+          font-bold text-lg md:text-2xl items-center justify-center rounded-md mr-3 text-alert-success"
+          >
+            <MdOutlineWifiCalling3 />
+            Call
+          </button>
+          <div className=" block md:hidden relative"
           onClick={() => {
             console.log("hello!");
             setShowMobileMenuBar(pre => !pre)
@@ -67,11 +76,13 @@ const NavbarHome = () => {
           <CgMenuRightAlt className=" w-8 h-8 cursor-pointer"/>
           {
             showMobileMenuBar && (
-             <ul className=" absolute text-nowrap justify-center 
+            <ul className={`absolute ${showMobileMenuBar ? "translate-animation-on" 
+            : ""}
+             text-nowrap justify-center 
              items-center flex flex-col  bg-richblack-600 text-sm 
-             bg-opacity-55 py-6 gap-2 top-20 -translate-y-10 transition-all
-              duration-700
-             right-0 backdrop-blur-sm rounded-md px-3">
+             bg-opacity-55 py-6 gap-2 top-10  transition-all
+              duration-700 
+             -right-40 backdrop-blur-sm rounded-md px-3`}>
                <NavLink
               to={""}
               className={({ isActive }) => {
@@ -103,15 +114,7 @@ const NavbarHome = () => {
             )
           }
         </div>
-          <button
-            className=" flex gap-3 scale-90 hover:scale-100 duration-300 bg-violate-600
-            md:py-2 md:px-4 py-1 px-2
-          font-bold text-lg md:text-2xl items-center justify-center rounded-md mr-3 text-alert-success"
-          >
-            <MdOutlineWifiCalling3 />
-            Call
-          </button>
-        </div>
+        </div> 
       </div>
     </div>
   );

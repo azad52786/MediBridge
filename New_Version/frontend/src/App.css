@@ -103,6 +103,31 @@ body {
    animation: rotate-img-reverse 10s linear infinite;
 }
 
+.translate-animation-on{
+   animation: translate-animation 0.3s linear forwards;
+}
+
+.translate-animation-off{
+   animation: translate-animation-off 0.3s linear forwards;
+}
+
+@keyframes translate-animation-off {
+   from {
+      transform: translateX(-10rem);
+   }
+   to {
+      transform: translateX(0px);
+   }
+}
+
+@keyframes translate-animation {
+   from {
+      transform: translateX(0px);
+   }
+   to {
+      transform: translateX(-10rem);
+   }
+}
 
 @keyframes rotate-img-reverse {
    from {
