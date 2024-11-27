@@ -21,7 +21,7 @@ const LeftSideBarComponent = ({ localStream }) => {
            text-base text-grey-500 
         "
       >
-        You're about to join in Omegal{" "}
+        You're about to join in Live Loop{" "}
       </p>
       <h1 className=" text-3xl mt-2 font-semibold font-edu-sa text-alert-success"
         style={{
