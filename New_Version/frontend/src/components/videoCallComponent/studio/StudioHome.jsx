@@ -148,9 +148,8 @@ const StudioHome = () => {
 
   return (
     <div className=" w-full h-full flex items-center justify-center">
-      <div className="w-[60%] grid grid-cols-2 gap-10">
-        <LeftSideBarComponent localStream={localStream} />
-        <div className=" w-full bg-[#1D1D1D] p-4 rounded-md">
+      <div className="lg:w-[70%] w-[90%]  grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-10 lg:gap-24 py-5">
+        <div className=" w-full bg-[#1D1D1D] p-4 rounded-md  border border-violate-600 border-opacity-35 ">
           <div className=" w-full rounded-md">
             {
               <div className=" w-full h-[250px] overflow-hidden">
@@ -238,6 +237,7 @@ const StudioHome = () => {
             </div>
           </div>
         </div>
+        <LeftSideBarComponent localStream={localStream}  className =" "/>
       </div>
     </div>
   );

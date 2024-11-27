@@ -23,7 +23,13 @@ const LeftSideBarComponent = ({ localStream }) => {
       >
         You're about to join in Omegal{" "}
       </p>
-      <h1 className=" text-3xl mt-2 font-semibold font-edu-sa text-alert-success">
+      <h1 className=" text-3xl mt-2 font-semibold font-edu-sa text-alert-success"
+        style={{
+                backgroundImage: "linear-gradient(111deg, #5238ff, #a0fbcd)",
+                color: "transparent",
+                backgroundClip: "text",
+              }}
+      >
         Let’s check your cam and mic
       </h1>
       <form onSubmit={submitHandler}
@@ -47,7 +53,15 @@ const LeftSideBarComponent = ({ localStream }) => {
           Conversations made simple, personal, and powerful
         </p>
         </div>
-        <button className=" w-fit font-edu-sa mt-3 py-2 font-bold px-4 bg-violate-600 rounded-md hover:shadow-lg">
+        <button className=" w-fit font-edu-sa mt-3 py-2 font-bold px-4 border border-white
+        rounded-md hover:shadow-lg scale-90 hover:scale-100 transition-all duration-300"
+        style={{
+                  backgroundImage:
+                    "linear-gradient(to right,#28c76f 0%,#5a4aff 47.92%,#ff3739 100%)",
+                  color: "transparent",
+                  backgroundClip: "text",
+                }}
+        >
           Let's Start
         </button>
       </form>
