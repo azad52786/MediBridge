@@ -23,17 +23,25 @@ import { BsChatText } from "react-icons/bs";
 import MenuSidebar from "./MenuSidebar";
 
 const CallPageHome = () => {
-  const { currentAudioDevice, currentVideoDevice, isAudioMute, isVideoMute , setIsAudioMute , setIsVideoMute } =
-    useStreamContext();
-    const [searchParams, setSearchParams] = useSearchParams();
-    const name = searchParams.get("userName");
+  const {
+    currentAudioDevice,
+    currentVideoDevice,
+    isAudioMute,
+    isVideoMute,
+    setIsAudioMute,
+    setIsVideoMute,
+  } = useStreamContext();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const name = searchParams.get("userName");
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [allChat, setAllChat] = useState([]);
   const [remoteUserDetails, setRemoteUserDetails] = useState(null);
   const [peer, setPeer] = useState(null);
-  const [currentMenuItem , setCurrentMenuItem] = useState(ALL_CALL_MENU_BAR_ITEMS.CHAT);
+  const [currentMenuItem, setCurrentMenuItem] = useState(
+    ALL_CALL_MENU_BAR_ITEMS.CHAT
+  );
   const localvideoRef = useRef("");
   const remotevideoRef = useRef("");
   const socket = useSocket();
@@ -331,27 +339,26 @@ const CallPageHome = () => {
       };
     }
   }, [remoteStream]);
-  
+
   const CALL_SIDE_BAR_MENU_ITEMS = [
     {
-      title : "chat" , 
-      icon : <BsChatText className=" w-7 h-7"/>
-    }
-  ]
+      title: "chat",
+      icon: <BsChatText className=" w-7 h-7" />,
+    },
+  ];
   return (
-
-    <div className=" w-full h-screen py-4">
+    <div className=" w-full h-fit lg:max-h-screen lg:h-screen py-4">
       {" "}
-      <div className="w-[97%] mx-auto h-full grid grid-cols-[73%_20%_5%] gap-4">
-        <div className=" w-full h-full ">
+      <div className="w-[97%] mx-auto h-fit lg:h-full grid grid-cols-1 lg:grid-cols-[73%_20%_5%] gap-4">
+        <div className=" w-full h-screen lg:h-full ">
           <div className=" w-full h-[7%] pb-1  font-edu-sa text-3xl font-bold">
             App Name
           </div>
           <div
-            className=" w-full flex gap-5 h-[80%] mt-2
-           items-center justify-between"
+            className=" w-full flex md:flex-row flex-col gap-5 h-[80%] mt-2
+           items-center md:justify-between"
           >
-            <div className=" w-[49%] h-full">
+            <div className=" w-full md:w-[49%] h-[48%] md:h-full">
               {localStream ? (
                 <div className=" w-full h-full relative">
                   <video
@@ -362,7 +369,7 @@ const CallPageHome = () => {
                     playsInline
                     style={{
                       transform: "scale(-1, 1)",
-                      objectPosition : "center" , 
+                      objectPosition: "center",
                       objectFit: "cover",
                     }}
                   ></video>
@@ -379,17 +386,17 @@ const CallPageHome = () => {
                 </div>
               )}
             </div>
-            <div className=" w-[49%] h-full">
+            <div className="w-full md:w-[49%] h-[48%] md:h-full">
               {remoteStream ? (
                 <video
-                // something wrong heppening here fix height of the video 
+                  // something wrong heppening here fix height of the video
                   className="w-full h-full overflow-hidden rounded-md bg-violate-800"
                   ref={remotevideoRef}
                   autoPlay
                   // playsInline
                   style={{
                     transform: "scale(-1, 1)",
-                    objectPosition : "center" ,  
+                    objectPosition: "center",
                     objectFit: "cover",
                   }}
                 ></video>
@@ -406,28 +413,42 @@ const CallPageHome = () => {
 
           <div
             className="  bg-[#242424] flex mt-2 rounded-md w-full h-[10%] py-3
-           items-center justify-center gap-10 flex-grow"
+           items-center justify-center gap-2 md:gap-10 flex-grow"
           >
             <button
-              className=" glow-on-hover font-edu-sa font-bold text-xl"
+              style={{
+                '--tw-gradient-angle': `${45}deg`,
+              }}
+              className=" md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-edu-sa font-bold text-sm md:text-xl"
               onClick={startCallingHandeler}
             >
-              {" "}
-              Next{" "}
+              Next
             </button>
             <button
-              className=" glow-on-hover font-edu-sa font-bold text-xl"
+             style={{
+                '--tw-gradient-angle': `${130}deg`,
+              }}
+              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-edu-sa font-bold text-sm md:text-xl"
               onClick={stopCallHandeler}
             >
               {" "}
               Stop{" "}
             </button>
-            <button className=" glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
-              onClick={() => setIsVideoMute(pre => {
-                          let videoTracks = findTracksHandler(localStream , TRACKS.VIDEO_TRACK);
-                          muteAndUnmuteHandeler(videoTracks  , pre);
-                          return !pre;
-                        })}
+            <button
+             style={{
+                '--tw-gradient-angle': `${280}deg`,
+              }}
+              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
+              onClick={() =>
+                setIsVideoMute((pre) => {
+                  let videoTracks = findTracksHandler(
+                    localStream,
+                    TRACKS.VIDEO_TRACK
+                  );
+                  muteAndUnmuteHandeler(videoTracks, pre);
+                  return !pre;
+                })
+              }
             >
               {" "}
               {isVideoMute ? (
@@ -436,12 +457,21 @@ const CallPageHome = () => {
                 <IoVideocamOutline className=" w-7 h-7" />
               )}
             </button>
-            <button className=" glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
-              onClick={() => setIsAudioMute(pre => {
-                          let audioTracks = findTracksHandler(localStream , TRACKS.AUDIO_TRACK);
-                          muteAndUnmuteHandeler(audioTracks , pre);
-                          return !pre;
-                        })}
+            <button
+             style={{
+                '--tw-gradient-angle': `${240}deg`,
+              }}
+              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
+              onClick={() =>
+                setIsAudioMute((pre) => {
+                  let audioTracks = findTracksHandler(
+                    localStream,
+                    TRACKS.AUDIO_TRACK
+                  );
+                  muteAndUnmuteHandeler(audioTracks, pre);
+                  return !pre;
+                })
+              }
             >
               {" "}
               {isAudioMute ? (
@@ -451,11 +481,21 @@ const CallPageHome = () => {
               )}
             </button>
           </div>
-          <div></div>
+         
         </div>
-        <ChatSection peer={peer} roomId={roomId} setAllChat={setAllChat} socket={socket} allChat={allChat} remoteUserIdRef={remoteUserIdRef} />
-        
-          <MenuSidebar currentMenuItem = {currentMenuItem}  setCurrentMenuItem = {setCurrentMenuItem}/>
+        <ChatSection
+          peer={peer}
+          roomId={roomId}
+          setAllChat={setAllChat}
+          socket={socket}
+          allChat={allChat}
+          remoteUserIdRef={remoteUserIdRef}
+        />
+
+        <MenuSidebar
+          currentMenuItem={currentMenuItem}
+          setCurrentMenuItem={setCurrentMenuItem}
+        />
       </div>
     </div>
   );

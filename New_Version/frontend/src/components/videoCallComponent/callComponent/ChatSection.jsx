@@ -59,7 +59,7 @@ const ChatSection = ({ peer, roomId, socket, setAllChat , remoteUserIdRef , allC
     };
   }, [socket, newMessageHandeler]);
   return (
-    <div className=" w-full max-h-[95vh] bg-[#242424] rounded-md">
+    <div className=" w-full h-[90vh] lg:min-h-[95vh] bg-[#242424] rounded-md">
       <div className=" w-full h-full">
         <div
           className=" w-[90%] py-3 flex items-center justify-center mx-auto font-bold text-xl border rounded-md mt-3
@@ -111,7 +111,7 @@ const ChatSection = ({ peer, roomId, socket, setAllChat , remoteUserIdRef , allC
         </div>
         <div className=" w-full">
           <form
-            className=" flex gap-3 relative w-[90%] mx-auto"
+            className=" flex gap-3 relative w-full px-2 mx-auto"
             onSubmit={chatUpdateHandeler}
           >
             <textarea

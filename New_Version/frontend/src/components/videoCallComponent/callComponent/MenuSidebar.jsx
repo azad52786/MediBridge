@@ -10,7 +10,7 @@ const CALL_SIDE_BAR_MENU_ITEMS = [
 
 const MenuSidebar = ({currentMenuItem , setCurrentMenuItem}) => {
   return (
-    <div className="w-full bg-[#242424] rounded-md h-full bg-gray-800 flex items-center justify-center ">
+    <div className="w-full bg-[#242424] rounded-md h-full bg-gray-800 flex items-center justify-center p-2 ">
       {CALL_SIDE_BAR_MENU_ITEMS.map((ele) => {
         return (
           <div
