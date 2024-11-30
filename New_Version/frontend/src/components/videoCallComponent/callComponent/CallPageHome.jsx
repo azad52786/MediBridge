@@ -350,7 +350,7 @@ const CallPageHome = () => {
     <div className=" w-full h-fit lg:max-h-screen lg:h-screen py-4">
       {" "}
       <div className="w-[97%] max-w-[500px] md:max-w-full mx-auto h-fit lg:h-full grid grid-cols-1 lg:grid-cols-[73%_20%_5%] gap-4">
-        <div className=" w-full h-screen lg:h-full ">
+        <div className=" w-full h-screen ">
           <div className=" w-full h-[7%] pb-1  font-edu-sa text-3xl font-bold">
             App Name
           </div>
