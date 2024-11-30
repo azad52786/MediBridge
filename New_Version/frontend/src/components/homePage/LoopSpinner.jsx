@@ -12,7 +12,7 @@ import mainimage from '../../assets/peopleImage/mainimage.jpg'
 const LoopSpinner = () => {
   return (
      <div className=" w-[250px] md:w-[300px]  lg:w-[350px] lg:h-[350px] aspect-square rounded-full relative  flex justify-center items-center">
-              <div class="rotate-div absolute h-full w-full rounded-full border border-dashed border-richblack-300">
+              <div className="rotate-div absolute h-full w-full rounded-full border border-dashed border-richblack-300">
                 <img
                   src= {person1}
                   className="absolute rotate-img -top-5 left-[40%] w-10 lg:w-12 aspect-square bg-violate-500 rounded-full"
@@ -34,7 +34,7 @@ const LoopSpinner = () => {
                   alt=""
                 />
               </div>
-              <div class="rotate-div-reverse absolute h-[60%] w-[60%] rounded-full border border-dashed border-richblack-300">
+              <div className="rotate-div-reverse absolute h-[60%] w-[60%] rounded-full border border-dashed border-richblack-300">
                 <img
                   src={person5}
                   className="absolute rotate-img-reverse -top-5 left-[40%] w-10 lg:w-12 aspect-square bg-violate-500 rounded-full"

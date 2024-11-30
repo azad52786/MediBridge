@@ -1,4 +1,4 @@
-import React from "react";
+import React , { Fragment } from "react";
 
 const callSetupSteps = [
   {
@@ -40,8 +40,8 @@ const SetUpSection = () => {
 
       <div className=" w-full flex flex-col gap-6 md:gap-16 mt-7 md:mt-20">
         {callSetupSteps.map((ele, index) => (
-        <>
-          <div className=" flex flex-col md:flex-row gap-y-7 md:gap-y-0" key={ele.step}>
+        <Fragment key={ele.step}>
+          <div className=" flex flex-col md:flex-row gap-y-7 md:gap-y-0" >
             <div className=" md:w-[25%] text-lg  md:text-3xl font-bold flex gap-4 items-center"
                 style={{
                     backgroundImage : ele.gradient , 
@@ -54,7 +54,7 @@ const SetUpSection = () => {
             </div>
             <div className=" md:w-[75%] text-richblack-200 md:text-base text-sm">{ele.description}</div>
           </div>
-            <div className=" h-[1px] w-full bg-richblack-600"></div></>
+            <div className=" h-[1px] w-full bg-richblack-600"></div></Fragment>
         ))}
       </div>
     </div>

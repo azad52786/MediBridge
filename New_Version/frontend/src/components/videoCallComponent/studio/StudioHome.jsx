@@ -148,7 +148,7 @@ const StudioHome = () => {
 
   return (
     <div className=" w-full h-full flex items-center justify-center">
-      <div className="lg:w-[70%] w-[90%]  grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-10 lg:gap-24 py-5">
+      <div className="lg:w-[70%] w-[90%] max-w-[420px] md:max-w-full  grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-10 lg:gap-24 py-5">
         <div className=" w-full bg-[#1D1D1D] p-4 rounded-md  border border-violate-600 border-opacity-35 ">
           <div className=" w-full rounded-md">
             {

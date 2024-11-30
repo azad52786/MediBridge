@@ -349,20 +349,20 @@ const CallPageHome = () => {
   return (
     <div className=" w-full h-fit lg:max-h-screen lg:h-screen py-4">
       {" "}
-      <div className="w-[97%] mx-auto h-fit lg:h-full grid grid-cols-1 lg:grid-cols-[73%_20%_5%] gap-4">
+      <div className="w-[97%] max-w-[500px] md:max-w-full mx-auto h-fit lg:h-full grid grid-cols-1 lg:grid-cols-[73%_20%_5%] gap-4">
         <div className=" w-full h-screen lg:h-full ">
           <div className=" w-full h-[7%] pb-1  font-edu-sa text-3xl font-bold">
             App Name
           </div>
           <div
-            className=" w-full flex md:flex-row flex-col gap-5 h-[80%] mt-2
+            className=" w-full  flex md:flex-row flex-col gap-5 h-[80%] mt-2
            items-center md:justify-between"
           >
             <div className=" w-full md:w-[49%] h-[48%] md:h-full">
               {localStream ? (
-                <div className=" w-full h-full relative">
+                <div className=" w-full h-full overflow-hidden relative">
                   <video
-                    className="w-full h-full overflow-hidden rounded-md bg-violate-800"
+                    className="w-full h-full  rounded-md bg-violate-800"
                     ref={localvideoRef}
                     autoPlay
                     muted
@@ -386,11 +386,11 @@ const CallPageHome = () => {
                 </div>
               )}
             </div>
-            <div className="w-full md:w-[49%] h-[48%] md:h-full">
+            <div className="w-full md:w-[49%] h-[48%] md:h-full overflow-hidden">
               {remoteStream ? (
                 <video
                   // something wrong heppening here fix height of the video
-                  className="w-full h-full overflow-hidden rounded-md bg-violate-800"
+                  className="w-full h-full rounded-md bg-violate-800"
                   ref={remotevideoRef}
                   autoPlay
                   // playsInline
