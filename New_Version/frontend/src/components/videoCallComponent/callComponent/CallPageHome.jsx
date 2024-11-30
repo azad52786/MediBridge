@@ -355,7 +355,7 @@ const CallPageHome = () => {
             App Name
           </div>
           <div
-            className=" w-full  flex md:flex-row flex-col gap-5 h-[80%] mt-2
+            className=" w-full  flex md:flex-row flex-col gap-5 max-h-[80%] h-[80%] mt-2
            items-center md:justify-between"
           >
             <div className=" w-full md:w-[49%] h-[48%] md:h-full">
