@@ -417,7 +417,7 @@ const CallPageHome = () => {
           >
             <button
               style={{
-                '--tw-gradient-angle': `${45}deg`,
+                "--tw-gradient-angle": `${45}deg`,
               }}
               className=" md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-edu-sa font-bold text-sm md:text-xl"
               onClick={startCallingHandeler}
@@ -425,8 +425,8 @@ const CallPageHome = () => {
               Next
             </button>
             <button
-             style={{
-                '--tw-gradient-angle': `${130}deg`,
+              style={{
+                "--tw-gradient-angle": `${130}deg`,
               }}
               className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-edu-sa font-bold text-sm md:text-xl"
               onClick={stopCallHandeler}
@@ -435,8 +435,8 @@ const CallPageHome = () => {
               Stop{" "}
             </button>
             <button
-             style={{
-                '--tw-gradient-angle': `${280}deg`,
+              style={{
+                "--tw-gradient-angle": `${280}deg`,
               }}
               className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
               onClick={() =>
@@ -458,8 +458,8 @@ const CallPageHome = () => {
               )}
             </button>
             <button
-             style={{
-                '--tw-gradient-angle': `${240}deg`,
+              style={{
+                "--tw-gradient-angle": `${240}deg`,
               }}
               className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
               onClick={() =>
@@ -481,7 +481,6 @@ const CallPageHome = () => {
               )}
             </button>
           </div>
-         
         </div>
         <ChatSection
           peer={peer}
