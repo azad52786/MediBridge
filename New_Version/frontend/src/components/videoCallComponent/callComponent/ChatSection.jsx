@@ -2,10 +2,18 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
 import { useSocket } from "../../../Context/SocketContext";
 
-const ChatSection = ({ peer, roomId, socket, setAllChat , remoteUserIdRef , allChat }) => {
+const ChatSection = ({
+  peer,
+  roomId,
+  socket,
+  setAllChat,
+  remoteUserIdRef,
+  allChat,
+}) => {
   const chatRef = useRef("");
-  const bottomRef = useRef("");
-  
+  const bottomRef = useRef(null);
+  const [shouldScroll, setShouldScroll] = useState(false);
+
   const chatUpdateHandeler = (e) => {
     e.preventDefault();
     let message = chatRef.current.value.trim();
@@ -24,7 +32,7 @@ const ChatSection = ({ peer, roomId, socket, setAllChat , remoteUserIdRef , allC
   const newMessageHandeler = useCallback(
     ({ from, message }) => {
       console.log(from, message);
-      setAllChat((pre) => [...pre, { from, message : message.trim() }]);
+      setAllChat((pre) => [...pre, { from, message: message.trim() }]);
       console.log(allChat);
     },
     [setAllChat, peer]
@@ -42,9 +50,28 @@ const ChatSection = ({ peer, roomId, socket, setAllChat , remoteUserIdRef , allC
   };
 
   useEffect(() => {
-    bottomRef.current.scrollIntoView({
-      behavior: "smooth"
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShouldScroll(entry.isIntersecting);
+      },
+      { threshold: 1.0 }
+    );
+
+    if (bottomRef.current) {
+      observer.observe(bottomRef.current);
+    }
+
+    return () => {
+      observer.unobserve(bottomRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (shouldScroll) {
+      bottomRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
   }, [allChat]);
 
   useEffect(() => {
@@ -95,7 +122,7 @@ const ChatSection = ({ peer, roomId, socket, setAllChat , remoteUserIdRef , allC
                       </div>
                     ) : (
                       <div
-                        className=" p-1 px-2  bg-violate-600 max-w-[200px] h-fit"
+                        className=" p-1 px-2  bg-violate-600 w-fit max-w-[200px] h-fit"
                         style={borderStyleD}
                       >
                         {/* <p className=' font-semibold text-pink-200'>{ele.user}</p> */}
