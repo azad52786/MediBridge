@@ -21,6 +21,7 @@ import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
 import ChatSection from "./ChatSection";
 import { BsChatText } from "react-icons/bs";
 import MenuSidebar from "./MenuSidebar";
+import navbarlogo from "../../../assets/smallnavbarlogo.png";
 
 const CallPageHome = () => {
   const {
@@ -189,7 +190,7 @@ const CallPageHome = () => {
 
   useEffect(() => {
     if (!currentAudioDevice || !currentVideoDevice) navigate("/studio");
-    toast("🦄 Press next and wait...");
+    toast("🦄 Press Click next and wait...");
   }, []);
 
   useEffect(() => {
@@ -219,19 +220,11 @@ const CallPageHome = () => {
             setPeer(null);
             break;
           case "failed":
-            // toast("Next Match");
-
-            console.log(peer);
-            console.log(localStream);
-            // why suddenly localstream is null here
-            console.log(localStream);
             console.error(
               "Connection failed. Please check the network or configuration."
             );
             break;
           case "closed":
-            // when anyone closed stop the peer connection
-            // peer.disconnectPeer();
             console.log("Connection closed.");
             break;
           default:
@@ -241,6 +234,10 @@ const CallPageHome = () => {
 
       peer.peer.onclose = (ev) => {
         console.log("Connection closed");
+      };
+      peer.peer.onicecandidateerror = (ev) => {
+        setRemoteStream(null);
+        setPeer(null);
       };
 
       peer.peer.onnegotiationneeded = negotiationHandeler;
@@ -298,13 +295,10 @@ const CallPageHome = () => {
             ? { deviceId: { exact: currentVideoDevice.deviceId } }
             : true,
         });
-        // const newStream = null;
-
         if (!newStream) {
           navigate("/studio");
           return;
         }
-
         const audioTrack = findTracksHandler(newStream, TRACKS.AUDIO_TRACK);
         const videoTrack = findTracksHandler(newStream, TRACKS.VIDEO_TRACK);
         if (isAudioMute) {
@@ -320,6 +314,17 @@ const CallPageHome = () => {
       }
     };
     if (currentAudioDevice && currentVideoDevice) initializeStream();
+
+    return () => {
+      console.log("unmounting media stream");
+      if (localStream) {
+        console.log("Tracks Stop");
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+        setLocalStream(null);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -347,12 +352,15 @@ const CallPageHome = () => {
     },
   ];
   return (
-    <div className=" w-full h-fit lg:max-h-screen lg:h-screen py-4">
+    <div className=" w-full h-fit lg:max-h-screen lg:h-screen">
       {" "}
       <div className="w-[97%] max-w-[500px] md:max-w-full mx-auto h-fit lg:h-full grid grid-cols-1 lg:grid-cols-[73%_20%_5%] gap-4">
         <div className=" w-full h-screen ">
-          <div className=" w-full h-[7%] pb-1  font-edu-sa text-3xl font-bold">
-            App Name
+          <div className="flex gap-3 pt-2  w-full h-[7%] pb-1  font-edu-sa text-3xl font-bold">
+            <img src={navbarlogo} className=" w-fit h-full rounded-md ml-3 " />
+            <h1 className=" font-bold text-lg md:text-2xl flex justify-center items-center h-full text-violate-500 ">
+              Live Loop
+            </h1>
           </div>
           <div
             className=" w-full  flex md:flex-row flex-col gap-5 max-h-[80%] h-[80%] mt-2
