@@ -7,7 +7,10 @@ import { CiMicrophoneOn, CiMicrophoneOff } from "react-icons/ci";
 import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
 import LeftSideBarComponent from "./LeftSideBarComponent";
 import AudioDeviceComponent from "./AudioDeviceComponent";
-import { findTracksHandler, muteAndUnmuteHandeler } from "../../../utils/handelerFunction";
+import {
+  findTracksHandler,
+  muteAndUnmuteHandeler,
+} from "../../../utils/handelerFunction";
 import { TRACKS } from "../../../utils/constant";
 import { useLocation } from "react-router-dom";
 
@@ -19,7 +22,6 @@ export const REACT_ICONS = {
 };
 
 const StudioHome = () => {
-
   const {
     localStream,
     setLocalStream,
@@ -48,7 +50,7 @@ const StudioHome = () => {
       });
       if (!userStream) return;
       setLocalStream(userStream);
-      console.log(localStream)
+      console.log(localStream);
       const getAllDevices = await navigator.mediaDevices.enumerateDevices();
       if (getAllDevices.length > 0) {
         const videoDevices = getAllDevices.filter(
@@ -83,11 +85,15 @@ const StudioHome = () => {
     }
   }, [setLocalStream]);
 
-
-
-
   useEffect(() => {
     getUserMedia();
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+    };
   }, []);
 
   // updation of the audio and video devices parsent over system
@@ -109,13 +115,13 @@ const StudioHome = () => {
         });
 
         if (!newStream) return;
-        // set the steam mute and unmute as perviously it has 
-        let audioTrack = findTracksHandler(newStream , TRACKS.AUDIO_TRACK);
+        // set the steam mute and unmute as perviously it has
+        let audioTrack = findTracksHandler(newStream, TRACKS.AUDIO_TRACK);
         let videoTrack = findTracksHandler(newStream, TRACKS.VIDEO_TRACK);
-        if(isAudioMute){
+        if (isAudioMute) {
           muteAndUnmuteHandeler(audioTrack, false);
         }
-        if(isVideoMute){
+        if (isVideoMute) {
           muteAndUnmuteHandeler(videoTrack, false);
         }
         setLocalStream(newStream);
@@ -135,13 +141,14 @@ const StudioHome = () => {
   }, [currentAudioDevice, currentVideoDevice]);
 
   useEffect(() => {
-    if (videoRef.current && localStream){
-      console.log("local Stream is : " , localStream)
+    if (videoRef.current && localStream) {
+      console.log("local Stream is : ", localStream);
       videoRef.current.srcObject = localStream;
     }
     return () => {
-      if (localStream ){
-         localStream.getTracks().forEach((track) => track.stop());
+      if (localStream) {
+        console.log("video Stream stop");
+        localStream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [localStream]);
@@ -172,11 +179,16 @@ const StudioHome = () => {
                     ></video>
                     <div className=" absolute bottom-2 w-full text-center text-3xl flex justify-center items-center gap-2">
                       <div
-                        onClick={() => setIsAudioMute(pre => {
-                          let audioTracks = findTracksHandler(localStream , TRACKS.AUDIO_TRACK);
-                          muteAndUnmuteHandeler(audioTracks , pre);
-                          return !pre;
-                        })}
+                        onClick={() =>
+                          setIsAudioMute((pre) => {
+                            let audioTracks = findTracksHandler(
+                              localStream,
+                              TRACKS.AUDIO_TRACK
+                            );
+                            muteAndUnmuteHandeler(audioTracks, pre);
+                            return !pre;
+                          })
+                        }
                         className={`bg-grey-800 p-2 rounded-md bg-opacity-50 cursor-pointer ${
                           isAudioMute ? "text-accent-primary" : ""
                         } `}
@@ -188,11 +200,16 @@ const StudioHome = () => {
                         )}
                       </div>
                       <div
-                         onClick={() => setIsVideoMute(pre => {
-                          let videoTracks = findTracksHandler(localStream , TRACKS.VIDEO_TRACK);
-                          muteAndUnmuteHandeler(videoTracks  , pre);
-                          return !pre;
-                        })}
+                        onClick={() =>
+                          setIsVideoMute((pre) => {
+                            let videoTracks = findTracksHandler(
+                              localStream,
+                              TRACKS.VIDEO_TRACK
+                            );
+                            muteAndUnmuteHandeler(videoTracks, pre);
+                            return !pre;
+                          })
+                        }
                         className={`bg-grey-800 p-2 rounded-md bg-opacity-50 cursor-pointer ${
                           isVideoMute ? "text-accent-secondary" : ""
                         } `}
@@ -237,7 +254,7 @@ const StudioHome = () => {
             </div>
           </div>
         </div>
-        <LeftSideBarComponent localStream={localStream}  className =" "/>
+        <LeftSideBarComponent localStream={localStream} className=" " />
       </div>
     </div>
   );

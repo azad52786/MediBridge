@@ -4,9 +4,8 @@ import { MdOutlineWifiCalling3 } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { CgMenuRightAlt } from "react-icons/cg";
 
-
 const NavbarHome = () => {
-  const [showMobileMenuBar , setShowMobileMenuBar ] = useState(false);
+  const [showMobileMenuBar, setShowMobileMenuBar] = useState(false);
   return (
     <div className=" ">
       <div
@@ -53,10 +52,8 @@ const NavbarHome = () => {
             </NavLink>
           </ul>
         </div>
-        
 
         <div className="flex items-center gap-1 mr-3 ">
-        
           <button
             className=" flex gap-3 scale-90 hover:scale-100 duration-300 bg-violate-600
             lg:py-2 lg:px-4 py-1 px-2
@@ -65,56 +62,59 @@ const NavbarHome = () => {
             <MdOutlineWifiCalling3 />
             Call
           </button>
-          <div className=" block md:hidden relative"
-          onClick={() => {
-            console.log("hello!");
-            setShowMobileMenuBar(pre => !pre)
-          }}
-          
-        >
-        
-          <CgMenuRightAlt className=" w-8 h-8 cursor-pointer"/>
-          {
-            showMobileMenuBar && (
-            <ul className={`absolute ${showMobileMenuBar ? "translate-animation-on" 
-            : ""}
+          <div
+            className=" block md:hidden relative"
+            onClick={() => {
+              console.log("hello!");
+              setShowMobileMenuBar((pre) => !pre);
+            }}
+          >
+            <CgMenuRightAlt className=" w-8 h-8 cursor-pointer" />
+            {showMobileMenuBar && (
+              <ul
+                className={`absolute ${
+                  showMobileMenuBar ? "translate-animation-on" : ""
+                }
              text-nowrap justify-center 
              items-center flex flex-col  bg-richblack-600 text-sm 
              bg-opacity-55 py-6 gap-2 top-10  transition-all
               duration-700 
-             -right-40 backdrop-blur-sm rounded-md px-3`}>
-               <NavLink
-              to={""}
-              className={({ isActive }) => {
-                return isActive ? "text-yellow-5 flex items-center justify-center w-full bg-richblack-500 bg-opacity-35 px-4 py-2 rounded-md"
-                : "text-grey-600 px-4 py-2 rounded-md w-full flex items-center justify-center hover:bg-richblack-800 bg-opacity-25";
-              }}
-            >
-              <li>Home</li>
-            </NavLink>
-            <NavLink
-              to={"/about"}
-              className={({ isActive }) => {
-                return isActive ? "text-yellow-5 w-full flex items-center justify-center bg-richblack-500 bg-opacity-35 px-4 py-2 rounded-md"
-                : "text-grey-600 px-4 py-2 rounded-md w-full flex items-center justify-center hover:bg-richblack-800 bg-opacity-25";
-              }}
-            >
-              <li>About</li>
-            </NavLink>
-            <NavLink
-              to={"/contact-us"}
-              className={({ isActive }) => {
-                return isActive ? "text-yellow-5 flex items-center justify-center w-full px-4 py-2 rounded-md bg-richblack-500 bg-opacity-35"
-                : "text-grey-600 px-4 py-2 rounded-md flex items-center justify-center w-full hover:bg-richblack-800 bg-opacity-25";
-              }}
-            >
-              <li>Contect Us</li>
-            </NavLink>
-             </ul>
-            )
-          }
+             -right-40 backdrop-blur-sm rounded-md px-3`}
+              >
+                <NavLink
+                  to={""}
+                  className={({ isActive }) => {
+                    return isActive
+                      ? "text-yellow-5 flex items-center justify-center w-full bg-richblack-500 bg-opacity-35 px-4 py-2 rounded-md"
+                      : "text-grey-600 px-4 py-2 rounded-md w-full flex items-center justify-center hover:bg-richblack-800 bg-opacity-25";
+                  }}
+                >
+                  <li>Home</li>
+                </NavLink>
+                <NavLink
+                  to={"/about"}
+                  className={({ isActive }) => {
+                    return isActive
+                      ? "text-yellow-5 w-full flex items-center justify-center bg-richblack-500 bg-opacity-35 px-4 py-2 rounded-md"
+                      : "text-grey-600 px-4 py-2 rounded-md w-full flex items-center justify-center hover:bg-richblack-800 bg-opacity-25";
+                  }}
+                >
+                  <li>About</li>
+                </NavLink>
+                <NavLink
+                  to={"/contact-us"}
+                  className={({ isActive }) => {
+                    return isActive
+                      ? "text-yellow-5 flex items-center justify-center w-full px-4 py-2 rounded-md bg-richblack-500 bg-opacity-35"
+                      : "text-grey-600 px-4 py-2 rounded-md flex items-center justify-center w-full hover:bg-richblack-800 bg-opacity-25";
+                  }}
+                >
+                  <li>Contect Us</li>
+                </NavLink>
+              </ul>
+            )}
+          </div>
         </div>
-        </div> 
       </div>
     </div>
   );

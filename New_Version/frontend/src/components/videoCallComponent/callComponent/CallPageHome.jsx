@@ -332,6 +332,14 @@ const CallPageHome = () => {
     if (localStream && localvideoRef.current) {
       localvideoRef.current.srcObject = localStream;
     }
+    
+    return () => {
+      if(localStream) {
+        localStream.getTracks().forEach(track => {
+          track.stop();
+        })
+      }
+    }
   }, [localStream]);
   useEffect(() => {
     if (remoteStream) sendStream();
