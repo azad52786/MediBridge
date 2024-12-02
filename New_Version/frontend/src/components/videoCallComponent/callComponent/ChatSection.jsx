@@ -62,7 +62,7 @@ const ChatSection = ({
     }
 
     return () => {
-      observer.unobserve(bottomRef.current);
+      if (bottomRef.current) observer.unobserve(bottomRef.current);
     };
   }, []);
 
@@ -86,7 +86,7 @@ const ChatSection = ({
     };
   }, [socket, newMessageHandeler]);
   return (
-    <div className=" w-full h-[90vh] lg:min-h-[95vh] bg-[#242424] rounded-md">
+    <div className=" w-full h-[90vh] lg:min-h-[96vh] bg-[#242424] rounded-md mt-0 lg:mt-3">
       <div className=" w-full h-full">
         <div
           className=" w-[90%] py-3 flex items-center justify-center mx-auto font-bold text-xl border rounded-md mt-3
@@ -117,7 +117,6 @@ const ChatSection = ({
                         className=" p-1 px-2  bg-accent-primary max-w-[200px] h-fit   "
                         style={borderStyleP}
                       >
-                        {/* <p className=' font-semibold text-pink-200'>{ele.user}</p> */}
                         <p className=" text-black break-words">{ele.message}</p>
                       </div>
                     ) : (
@@ -125,7 +124,6 @@ const ChatSection = ({
                         className=" p-1 px-2  bg-violate-600 w-fit max-w-[200px] h-fit"
                         style={borderStyleD}
                       >
-                        {/* <p className=' font-semibold text-pink-200'>{ele.user}</p> */}
                         <p className=" text-black break-words">{ele.message}</p>
                       </div>
                     )}
