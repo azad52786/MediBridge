@@ -94,14 +94,17 @@ const ContactUsHome = () => {
     });
   };
   return (
-    <div className=" h-screen w-screen pt-32 flex items-center flex-col ">
+    <div className=" md:h-screen h-fit min-h-screen w-screen pt-32 flex items-center flex-col ">
       <h1 className=" font-bold text-2xl">Contact Us</h1>
       <p className=" mt-2 text-lg">
         Any Question or remarks? Just write us a message
       </p>
-      <div className=" w-[60%] bg-white rounded-md h-[65vh] mt-7 flex">
+      <div
+        className=" lg:w-[60%] md:w-[90%] w-[95%] bg-white rounded-md h-fit md:h-[65vh]
+      mt-7 flex flex-col md:flex-row pb-4 md:pb-0 mb-5 md:mb-0 "
+      >
         <div
-          className=" w-[40%] text-richblack-900 bg-[#8041f5] rounded-md h-full px-4 py-20 flex flex-col
+          className=" w-full md:w-[40%] text-richblack-900 bg-[#8041f5] rounded-md h-full px-4 py-20 flex flex-col
              items-center justify-around gap-4
         "
         >
@@ -159,7 +162,7 @@ const ContactUsHome = () => {
                       id={field.name}
                       name={field.name}
                       className=" outline-none bg-transparent border-b-2
-                       resize-none border-[#973ee6] pl-2 pb-2"
+                       resize-none border-[#973ee6] pl-2"
                       placeholder={field.placeholder}
                       onChange={handleChange}
                       value={formData[field.name]}
