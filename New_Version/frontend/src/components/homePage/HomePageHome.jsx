@@ -11,12 +11,12 @@ import SetUpSection from "./SetUpSection";
 const HomePageHome = () => {
   const fontSize = () => {
     const width = window.innerWidth;
-    if(width < 480) return "1.2em";
-    if(width < 768) {
-        return "0.5em"
+    if (width < 480) return "1.2em";
+    if (width < 768) {
+      return "0.5em";
     }
     return "2em";
-  }
+  };
   return (
     <div className=" w-full h-full  bg-[#18181B] overflow-hidden">
       {/* bg-[#18181B] */}
@@ -29,12 +29,16 @@ const HomePageHome = () => {
             height={550}
             className=" absolute top-[60%] rounded-full left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
           />
-          <div className=" relative pt-20 md:pt-0  z-20  w-full h-full flex 
-          md:gap-3 flex-col justify-center items-center ">
-            <div className=" w-full h-fit p-3 
-              flex flex-col items-center justify-center md:gap-y-2">
+          <div
+            className=" relative pt-20 md:pt-0  z-20  w-full h-full flex 
+          md:gap-3 flex-col justify-center items-center "
+          >
+            <div
+              className=" w-full h-fit p-3 
+              flex flex-col items-center justify-center md:gap-y-2"
+            >
               <p
-                className=" text-lg md:text-6xl font-edu-sa
+                className=" text-3xl md:text-6xl font-karla lg:font-edu-sa
                  font-bold block"
                 style={{
                   backgroundImage: "linear-gradient(111deg, #f85d7f, #6b81fa)",
@@ -46,7 +50,7 @@ const HomePageHome = () => {
               </p>
 
               <p
-                className=" text-lg  md:text-5xl font-edu-sa  font-bold"
+                className=" text-3xl md:text-6xl font-karla lg:font-edu-sa font-bold"
                 style={{
                   backgroundImage: "linear-gradient(111deg, #5238ff, #a0fbcd)",
                   color: "transparent",
@@ -84,7 +88,7 @@ const HomePageHome = () => {
             </div>
             <div className=" md:px-10 lg:px-[5rem] mt-1 text-center">
               <h1
-                className=" font-semibold text-lg md:text-3xl font-edu-sa "
+                className=" font-semibold text-lg md:text-3xl font-karla lg:font-edu-sa "
                 style={{
                   backgroundImage:
                     "linear-gradient(to right,#28c76f 0%,#5a4aff 47.92%,#ff3739 100%)",
@@ -97,14 +101,19 @@ const HomePageHome = () => {
             </div>
             <Link to={"/studio"}>
               {" "}
-              <button className=" mt-7 md:px-4 md:py-3 py-1 px-2 rounded-md bg-violate-600 font-edu-sa hover:scale-100 scale-90 transition-all duration-300">
+              <button
+                className=" mt-7 md:px-4 md:py-3 py-1 px-2 rounded-md bg-violate-600 
+              lg:font-edu-sa font-karla hover:scale-100 scale-90 transition-all duration-300"
+              >
                 Let's Start
               </button>
             </Link>
           </div>
         </div>
-        <div className=" relative z-20 md:mt-32 flex flex-col lg:flex-row
-        md:py-12 w-full h-fit items-center min-h-[70vh] gap-y-20 lg:gap-y-0 font-edu-sa">
+        <div
+          className=" relative z-20 md:mt-32 flex flex-col lg:flex-row
+        md:py-12 w-full h-fit items-center min-h-[70vh] gap-y-20 lg:gap-y-0 font-karla lg:font-edu-sa"
+        >
           <div className=" lg:w-1/2 flex flex-col justify-center h-full">
             <p
               className=" text-lg md:text-4xl font-bold "
@@ -147,10 +156,10 @@ const HomePageHome = () => {
               height="80%"
               className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20"
             />
-            <LoopSpinner/>
+            <LoopSpinner />
           </div>
         </div>
-        <SetUpSection/>
+        <SetUpSection />
       </div>
     </div>
   );

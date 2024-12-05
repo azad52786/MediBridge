@@ -108,7 +108,7 @@ const ChatSection = ({
                 return (
                   <div
                     key={index}
-                    className={` w-full mb-3 font-edu-sa flex flex-col  ${
+                    className={` w-full mb-3 font-karla lg:font-edu-sa flex flex-col  ${
                       ele.from === socket.id ? "" : "place-items-end"
                     } `}
                   >

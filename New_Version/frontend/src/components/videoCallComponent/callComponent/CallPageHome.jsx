@@ -332,14 +332,14 @@ const CallPageHome = () => {
     if (localStream && localvideoRef.current) {
       localvideoRef.current.srcObject = localStream;
     }
-    
+
     return () => {
-      if(localStream) {
-        localStream.getTracks().forEach(track => {
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
           track.stop();
-        })
+        });
       }
-    }
+    };
   }, [localStream]);
   useEffect(() => {
     if (remoteStream) sendStream();
@@ -364,7 +364,7 @@ const CallPageHome = () => {
       {" "}
       <div className="w-[97%] max-w-[500px] md:max-w-full mx-auto h-fit lg:h-full grid grid-cols-1 lg:grid-cols-[73%_20%_5%] gap-4">
         <div className=" w-full h-screen ">
-          <div className="flex gap-3 pt-2  w-full h-[7%] pb-1  font-edu-sa text-3xl font-bold">
+          <div className="flex gap-3 pt-2  w-full h-[7%] pb-1 font-karla  lg:font-edu-sa text-3xl font-bold">
             <img src={navbarlogo} className=" w-fit h-full rounded-md ml-3 " />
             <h1 className=" font-bold text-lg md:text-2xl flex justify-center items-center h-full text-violate-500 ">
               Live Loop
@@ -389,7 +389,7 @@ const CallPageHome = () => {
                       objectFit: "cover",
                     }}
                   ></video>
-                  <div className=" font-bold text-3xl font-edu-sa absolute bottom-1 left-2">
+                  <div className=" font-bold text-3xl font-karla lg:font-edu-sa absolute bottom-1 left-2">
                     {name ? name.substring(0, 30) : ""}
                   </div>
                 </div>
@@ -435,7 +435,9 @@ const CallPageHome = () => {
               style={{
                 "--tw-gradient-angle": `${45}deg`,
               }}
-              className=" md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-edu-sa font-bold text-sm md:text-xl"
+              className=" md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover
+              font-karla lg:font-edu-sa
+              font-bold text-sm md:text-xl"
               onClick={startCallingHandeler}
             >
               Next
@@ -444,7 +446,7 @@ const CallPageHome = () => {
               style={{
                 "--tw-gradient-angle": `${130}deg`,
               }}
-              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-edu-sa font-bold text-sm md:text-xl"
+              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-karla lg:font-edu-sa font-bold text-sm md:text-xl"
               onClick={stopCallHandeler}
             >
               {" "}
@@ -454,7 +456,7 @@ const CallPageHome = () => {
               style={{
                 "--tw-gradient-angle": `${280}deg`,
               }}
-              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
+              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-karla lg:font-edu-sa font-bold text-xl flex items-center justify-center"
               onClick={() =>
                 setIsVideoMute((pre) => {
                   let videoTracks = findTracksHandler(
@@ -477,7 +479,7 @@ const CallPageHome = () => {
               style={{
                 "--tw-gradient-angle": `${240}deg`,
               }}
-              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-edu-sa font-bold text-xl flex items-center justify-center"
+              className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-karla lg:font-edu-sa font-bold text-xl flex items-center justify-center"
               onClick={() =>
                 setIsAudioMute((pre) => {
                   let audioTracks = findTracksHandler(

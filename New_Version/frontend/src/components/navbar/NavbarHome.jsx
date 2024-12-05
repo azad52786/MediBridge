@@ -9,7 +9,7 @@ const NavbarHome = () => {
   return (
     <div className=" ">
       <div
-        className=" fixed left-[2%] md:left-[10%] font-edu-sa top-5 rounded-full 
+        className=" fixed left-[2%] md:left-[10%] font-karla lg:font-edu-sa top-5 rounded-full 
         z-30 bg-transparent backdrop-blur-sm 
          w-[95%] md:w-[80%] h-12 md:h-16 lg:h-20 border lg:bg-white lg:bg-opacity-10
          border-purple-300 flex py-2 px-2  items-center justify-between"
@@ -25,7 +25,7 @@ const NavbarHome = () => {
           </h1>
         </div>
         <div>
-          <ul className=" hidden md:flex gap-10 text-grey-600">
+          <ul className=" hidden md:flex gap-10 text-lg text-grey-600">
             <NavLink
               to={""}
               className={({ isActive }) => {
@@ -76,8 +76,8 @@ const NavbarHome = () => {
                   showMobileMenuBar ? "translate-animation-on" : ""
                 }
              text-nowrap justify-center 
-             items-center flex flex-col  bg-richblack-600 text-sm 
-             bg-opacity-55 py-6 gap-2 top-10  transition-all
+             items-center flex flex-col  bg-richblack-600 
+             bg-opacity-70 text-lg py-6 gap-2 top-10  transition-all
               duration-700 
              -right-40 backdrop-blur-sm rounded-md px-3`}
               >

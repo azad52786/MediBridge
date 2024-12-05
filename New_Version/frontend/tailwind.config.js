@@ -7,8 +7,9 @@ export default {
  theme: {
   fontFamily: {
     inter: ["Inter", "sans-serif"],
-    "edu-sa": ["Edu SA Beginner", "cursive"],
+    // "edu-sa": ["Edu SA Beginner", "cursive"],
     mono: ["Roboto Mono", "monospace"],
+    karla : ["Karla", "sans-serif"] , 
   },
   colors: {
     white: "#ffffff",
