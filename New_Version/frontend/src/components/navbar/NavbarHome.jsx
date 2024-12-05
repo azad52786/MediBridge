@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import navbarlogo from "../../assets/smallnavbarlogo.png";
 import { MdOutlineWifiCalling3 } from "react-icons/md";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { CgMenuRightAlt } from "react-icons/cg";
 
 const NavbarHome = () => {
@@ -54,14 +54,17 @@ const NavbarHome = () => {
         </div>
 
         <div className="flex items-center gap-1 mr-3 ">
-          <button
-            className=" flex gap-3 scale-90 hover:scale-100 duration-300 bg-violate-600
+          <Link to={"/studio"}>
+            {" "}
+            <button
+              className=" flex gap-3 scale-90 hover:scale-100 duration-300 bg-violate-600
             lg:py-2 lg:px-4 py-1 px-2
           font-bold text-lg md:text-2xl items-center justify-center rounded-md mr-3 text-alert-success"
-          >
-            <MdOutlineWifiCalling3 />
-            Call
-          </button>
+            >
+              <MdOutlineWifiCalling3 />
+              Call
+            </button>
+          </Link>
           <div
             className=" block md:hidden relative"
             onClick={() => {

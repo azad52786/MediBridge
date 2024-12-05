@@ -29,7 +29,7 @@ const callSetupSteps = [
 
 const SetUpSection = () => {
   return (
-    <div className=" w-full h-full mt-20 font-karla lg:font-edu-sa">
+    <div className=" w-full h-full mt-20 font-karla lg:font-edu-sa pb-20">
       <p
         className=" text-lg md:text-4xl font-bold w-full flex items-center justify-center"
         style={{

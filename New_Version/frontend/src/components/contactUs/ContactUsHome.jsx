@@ -94,7 +94,7 @@ const ContactUsHome = () => {
     });
   };
   return (
-    <div className=" md:h-screen h-fit min-h-screen w-screen pt-32 flex items-center flex-col ">
+    <div className=" md:h-screen h-fit min-h-screen bg-[#18181B] w-screen pt-32 flex items-center flex-col ">
       <h1 className=" font-bold text-2xl">Contact Us</h1>
       <p className=" mt-2 text-lg">
         Any Question or remarks? Just write us a message
@@ -125,21 +125,34 @@ const ContactUsHome = () => {
           <div className=" w-16 aspect-square rounded-full bg-blue-50 ml-24"></div>
           <div className=" w-10 aspect-square rounded-full bg-pink-50 ml-12 -mt-7"></div>
           <div className=" w-full flex mt-2 justify-center items-center gap-5">
-            <IoLogoInstagram
-              className=" cursor-pointer  bg-opacity-65
+            <a target="_blank" href="https://www.instagram.com/azad.0.7.6/">
+              {" "}
+              <IoLogoInstagram
+                className=" cursor-pointer  bg-opacity-65
              transition-all hover:bg-blue-100 duration-300
             w-12 h-12 border border-richblack-300 rounded-full p-2"
-            />
-            <CiLinkedin
-              className=" cursor-pointer  bg-opacity-65
+              />
+            </a>
+            <a
+              target="_blank"
+              href="https://www.linkedin.com/in/kaji-azad-ali-4bb706249/"
+            >
+              <CiLinkedin
+                className=" cursor-pointer  bg-opacity-65
              transition-all hover:bg-yellow-100 duration-300
             w-12 h-12 border border-richblack-300 rounded-full p-2"
-            />
-            <CiFacebook
-              className=" cursor-pointer  bg-opacity-65
+              />
+            </a>
+            <a
+              target="_blank"
+              href="https://www.facebook.com/profile.php?id=100089182857780"
+            >
+              <CiFacebook
+                className=" cursor-pointer  bg-opacity-65
              transition-all hover:bg-caribbeangreen-100 duration-300
             w-12 h-12 border border-richblack-300 rounded-full p-2"
-            />
+              />
+            </a>
           </div>
         </div>
         <div className=" flex-grow text-richblack-900 pt-4 pl-5 pr-10">

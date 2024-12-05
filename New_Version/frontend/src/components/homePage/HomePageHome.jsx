@@ -142,7 +142,7 @@ const HomePageHome = () => {
                 return (
                   <div key={ele.id} className="flex gap-2 text-sm">
                     <span>{ele.icon}</span>
-                    <p className=" text-grey-400">{ele.heading}</p>
+                    <p className=" text-grey-400 text-lg">{ele.heading}</p>
                   </div>
                 );
               })}
