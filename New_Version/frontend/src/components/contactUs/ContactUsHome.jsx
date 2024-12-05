@@ -109,7 +109,7 @@ const ContactUsHome = () => {
         "
         >
           <h1 className=" font-bold text-xl">Contact Information</h1>
-          <p className=" text-lg text-wrap text-center font-semibold">
+          <p className=" text-lg text-wrap text-center w-full items-center justify-center font-semibold">
             Fill up the form and our team will get back to you within 24 hours
           </p>
           <p className=" flex gap-3 font-semibold text-lg items-center justify-center  ">
