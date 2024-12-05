@@ -9,9 +9,9 @@ const NavbarHome = () => {
   return (
     <div className=" ">
       <div
-        className=" fixed left-[2%] md:left-[10%] font-karla lg:font-edu-sa top-5 rounded-full 
+        className=" fixed left-[2%] md:left-[15%] font-karla lg:font-edu-sa top-5 rounded-full 
         z-30 bg-transparent backdrop-blur-sm 
-         w-[95%] md:w-[80%] h-12 md:h-16 lg:h-20 border lg:bg-white lg:bg-opacity-10
+         w-[95%] md:w-[70%] h-12 md:h-16 lg:h-16 border lg:bg-white lg:bg-opacity-10
          border-purple-300 flex py-2 px-2  items-center justify-between"
       >
         <div className="h-full overflow-hidden gap-2 w-fit flex">
@@ -25,7 +25,7 @@ const NavbarHome = () => {
           </h1>
         </div>
         <div>
-          <ul className=" hidden md:flex gap-10 text-lg text-grey-600">
+          <ul className=" hidden md:flex md:gap-4 lg:gap-10 md:text-base  lg:text-lg text-grey-600">
             <NavLink
               to={""}
               className={({ isActive }) => {
