@@ -80,7 +80,7 @@ const NavbarHome = () => {
                 }
              text-nowrap justify-center 
              items-center flex flex-col  bg-richblack-600 
-             bg-opacity-70 text-lg py-6 gap-2 top-10  transition-all
+             bg-opacity-95 text-lg py-6 gap-2 top-10  transition-all
               duration-700 
              -right-40 backdrop-blur-sm rounded-md px-3`}
               >
