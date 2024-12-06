@@ -18,22 +18,18 @@ const ChatSection = ({
     e.preventDefault();
     let message = chatRef.current.value.trim();
     if (message !== "") {
-      console.log(message);
       socket.emit("newMessage", {
         message,
         roomId,
         remoteSocket: remoteUserIdRef.current,
       });
       chatRef.current.value = "";
-      // console.log(chatRef.current.value)
     }
   };
 
   const newMessageHandeler = useCallback(
     ({ from, message }) => {
-      console.log(from, message);
       setAllChat((pre) => [...pre, { from, message: message.trim() }]);
-      console.log(allChat);
     },
     [setAllChat, peer]
   );

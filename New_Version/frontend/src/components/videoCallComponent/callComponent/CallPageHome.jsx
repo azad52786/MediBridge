@@ -50,7 +50,6 @@ const CallPageHome = () => {
   const navigate = useNavigate();
 
   const sendStream = useCallback(() => {
-    console.log("sending stream");
     if (localStream) {
       const existingSenders = peer.peer.getSenders();
 
@@ -60,7 +59,6 @@ const CallPageHome = () => {
         );
 
         if (!isTrackAlreadyAdded) {
-          console.log("Adding new track:", track);
           peer.peer.addTrack(track, localStream);
         } else {
           console.log("Track already added:", track);
@@ -77,12 +75,9 @@ const CallPageHome = () => {
         remoteUserName,
         remoteSocketId,
       });
-      console.log("remoteusedetails updated");
-      console.log(peer);
       // cross checking of peer before creating new connection
       // if(!peer || !peer.peer) setPeer(null);
       const offer = await peer.getOffer();
-      console.log("offer is ", offer);
       socket.emit("call:offer", {
         roomId,
         from: socket.id,
@@ -97,9 +92,7 @@ const CallPageHome = () => {
     async ({ remoteSocketId, remoteUserName, roomId, offer }) => {
       setRemoteUserDetails({ remoteSocketId, remoteUserName });
       setRoomId(roomId);
-      console.log("answer creating", offer);
       const answer = await peer.getAnswer(offer);
-      console.log("ans in calling page ", answer);
       socket.emit("call:accepted", { to: remoteSocketId, answer });
     },
     [peer, socket, setRoomId, setRemoteUserDetails]
@@ -107,10 +100,8 @@ const CallPageHome = () => {
 
   const callAccepted = useCallback(
     async ({ answer }) => {
-      console.log("setting remote desc by user 1", answer);
       await peer.setRemoteDesc(answer);
       sendStream();
-      console.log("Connection Done");
     },
     [peer, localStream, sendStream]
   );
@@ -118,17 +109,13 @@ const CallPageHome = () => {
     console.log("calling Again...");
     // it's not check for first time .. it's for stop -> then start
     if (peer && peer.peer === null) {
-      console.log("peer.peer is null");
       setPeer(null);
     }
-    console.log(peer);
     socket.emit("call:request", { name });
   }, [peer, socket, setPeer, name]);
 
   const negotiationHandeler = useCallback(async () => {
     const offer = await peer.getOffer();
-    console.log("negotiation handshake offer created");
-    console.log(remoteUserIdRef.current);
     socket.emit("negotiation:handshake", {
       to: remoteUserIdRef.current,
       offer,
@@ -138,8 +125,6 @@ const CallPageHome = () => {
   const negotiationAnswerHandeler = useCallback(
     async ({ from, offer }) => {
       const ans = await peer.getAnswer(offer);
-      console.log("negotiation answer received");
-      console.log(ans, from);
       socket.emit("negotiation:answer", { to: from, ans });
     },
     [peer, socket]
@@ -158,7 +143,6 @@ const CallPageHome = () => {
   }, []);
 
   const disconnectHandeler = useCallback(() => {
-    console.log("event disconnected");
     setRoomId(null);
     setRemoteStream(null);
     setRemoteUserDetails(null);
@@ -199,15 +183,12 @@ const CallPageHome = () => {
   }, [remoteUserDetails]);
   useEffect(() => {
     if (!peer || !peer?.peer) {
-      console.log("It's new peer connection");
       let newPeerConnection = new PeerService();
       setPeer(newPeerConnection);
       return;
     }
     /// skip is pending
-    console.log("adding all of these theing for new peer connection");
     if (peer && peer.peer) {
-      console.log("event added");
       peer.peer.onconnectionstatechange = (event) => {
         const connectionState = peer.peer.connectionState;
         switch (connectionState) {
@@ -245,7 +226,6 @@ const CallPageHome = () => {
       peer.peer.ontrack = (ev) => {
         const remoteStream = ev.streams;
         if (remoteStream.length < 1) return;
-        console.log("tracks came in: " + remoteStream[0]);
         setRemoteStream(remoteStream[0]);
       };
     }
@@ -316,9 +296,7 @@ const CallPageHome = () => {
     if (currentAudioDevice && currentVideoDevice) initializeStream();
 
     return () => {
-      console.log("unmounting media stream");
       if (localStream) {
-        console.log("Tracks Stop");
         localStream.getTracks().forEach((track) => {
           track.stop();
         });
@@ -328,7 +306,6 @@ const CallPageHome = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Local Stream Updated : ", localStream);
     if (localStream && localvideoRef.current) {
       localvideoRef.current.srcObject = localStream;
     }

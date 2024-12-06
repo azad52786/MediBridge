@@ -50,7 +50,6 @@ const StudioHome = () => {
       });
       if (!userStream) return;
       setLocalStream(userStream);
-      console.log(localStream);
       const getAllDevices = await navigator.mediaDevices.enumerateDevices();
       if (getAllDevices.length > 0) {
         const videoDevices = getAllDevices.filter(
@@ -142,12 +141,10 @@ const StudioHome = () => {
 
   useEffect(() => {
     if (videoRef.current && localStream) {
-      console.log("local Stream is : ", localStream);
       videoRef.current.srcObject = localStream;
     }
     return () => {
       if (localStream) {
-        console.log("video Stream stop");
         localStream.getTracks().forEach((track) => track.stop());
       }
     };
