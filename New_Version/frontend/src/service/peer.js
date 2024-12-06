@@ -34,7 +34,6 @@ export class PeerService {
         if(this.peer){
             await this.peer.setRemoteDescription(offer);
             const answer = await this.peer.createAnswer();
-            console.log("Ans in peer Desc: " ,  answer)
             await this.peer.setLocalDescription(answer);
             return answer;
         }
@@ -42,7 +41,6 @@ export class PeerService {
     
     async setRemoteDesc(answer){
         if(this.peer){
-            console.log("answer is " , answer);
             await this.peer.setRemoteDescription(answer);
         }
     }

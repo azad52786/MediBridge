@@ -22,7 +22,7 @@ import ChatSection from "./ChatSection";
 import { BsChatText } from "react-icons/bs";
 import MenuSidebar from "./MenuSidebar";
 import navbarlogo from "../../../assets/smallnavbarlogo.png";
-
+import bgImage from "../../../assets/peopleImage/Untitled design.png";
 const CallPageHome = () => {
   const {
     currentAudioDevice,
@@ -383,11 +383,14 @@ const CallPageHome = () => {
               {remoteStream ? (
                 <video
                   // something wrong heppening here fix height of the video
-                  className="w-full h-full rounded-md bg-violate-800"
+                  className="w-full h-full rounded-md backdrop-blur-lg"
                   ref={remotevideoRef}
                   autoPlay
                   // playsInline
                   style={{
+                    backgroundImage: `url(${bgImage})`,
+                    backgroundPosition: `center`,
+                    backdropFilter: true,
                     transform: "scale(-1, 1)",
                     objectPosition: "center",
                     objectFit: "cover",
