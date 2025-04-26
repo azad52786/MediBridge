@@ -98,21 +98,21 @@ const CallPageHome = () => {
     [peer, socket, setRoomId, setRemoteUserDetails]
   );
 
-  const callAccepted = useCallback(
-    async ({ answer }) => {
-      await peer.setRemoteDesc(answer);
-      sendStream();
-    },
-    [peer, localStream, sendStream]
-  );
-  const startCallingHandeler = useCallback(() => {
-    console.log("calling Again...");
-    // it's not check for first time .. it's for stop -> then start
-    if (peer && peer.peer === null) {
-      setPeer(null);
-    }
-    socket.emit("call:request", { name });
-  }, [peer, socket, setPeer, name]);
+	const callAccepted = useCallback(
+		async ({ answer }) => {
+			await peer.setRemoteDesc(answer);
+			sendStream();
+		},
+		[peer, localStream, sendStream]
+	);
+	const startCallingHandeler = useCallback(() => {
+		console.log("calling Again... in fix");
+		// it's not check for first time .. it's for stop -> then start
+		if (peer && peer.peer === null) {
+			setPeer(null);
+		}
+		socket.emit("call:request", { name });
+	}, [peer, socket, setPeer, name]);
 
   const negotiationHandeler = useCallback(async () => {
     const offer = await peer.getOffer();
