@@ -23,7 +23,7 @@ exports.io = new socket_io_1.Server(server, {
     },
 });
 const userService = new UserManager_1.UserService();
-exports.io.on('connection', (socket) => {
+exports.io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
     // Register matchmaking events
     (0, matchmaking_1.handleMatchmakingEvents)(exports.io, socket, userService);
@@ -34,8 +34,8 @@ exports.io.on('connection', (socket) => {
 });
 const PORT = process.env.PORT || 3000;
 console.log(process.env.PORT);
-app.get('/', (req, res) => {
-    res.send('Hello, TypeScript!');
+app.get("/", (req, res) => {
+    res.send("Hello, TypeScript!");
 });
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

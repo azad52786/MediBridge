@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoomService = void 0;
 const __1 = require("..");
-const constant_1 = require("../utils/constant");
+const helperFunction_1 = require("../utils/helperFunction");
 class RoomService {
     constructor() {
         this.findOtherSocketId = (socket) => {
@@ -19,14 +19,12 @@ class RoomService {
         this.rooms = new Map();
     }
     createRoom(user1, user2) {
-        let roomId = constant_1.GLOBAL_ROOM_ID.toString();
-        constant_1.GLOBAL_ROOM_ID++;
+        let roomId = (0, helperFunction_1.generateRoomId)();
         this.rooms.set(roomId, { user1, user2 });
         // send the socket Id of User 2 for sending offer
-        __1.io.to(user1.socket).emit("match:done", {
+        __1.io.to(user1.socket).emit("match-done", {
             roomId,
-            remoteUserName: user2.userName,
-            remoteSocketId: user2.socket,
+            remoteUserDetails: user2,
         });
     }
     getRoomDetails(roomId) {
@@ -42,7 +40,6 @@ class RoomService {
     }
     removeRoomDetils(roomId) {
         this.rooms.delete(roomId);
-        console.log("Room Deleted");
     }
 }
 exports.RoomService = RoomService;
