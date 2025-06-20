@@ -43,6 +43,7 @@ const CallPageHome = () => {
 	const [currentMenuItem, setCurrentMenuItem] = useState(
 		ALL_CALL_MENU_BAR_ITEMS.CHAT
 	);
+	const [matching, setMatching] = useState(false);
 	const localvideoRef = useRef("");
 	const remotevideoRef = useRef("");
 	const socket = useSocket();
@@ -51,6 +52,7 @@ const CallPageHome = () => {
 
 	const startCallingHandler = useCallback(() => {
 		// Requesting for a new Room
+		setMatching(true);
 		socket.emit("request-room", { name, roomId });
 	}, [socket, name, roomId]);
 
@@ -299,7 +301,7 @@ const CallPageHome = () => {
 							}}
 							className=" md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover
               font-karla lg:font-edu-sa
-              font-bold text-sm md:text-xl"
+              font-bold text-sm md:text-xl ${matching ? "" : "after:bg-black"}`}
 							onClick={startCallingHandler}
 						>
 							Next
