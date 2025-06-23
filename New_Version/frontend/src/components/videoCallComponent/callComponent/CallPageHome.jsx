@@ -58,6 +58,10 @@ const CallPageHome = () => {
 
 	const newCallGenerator = useCallback(
 		({ roomId, remoteUserDetails }) => {
+			console.log("NEW CALL STARTING");
+			// If already connected with someone. close that first then go for new call
+			if (peer.current) closeVideoCall();
+			// Adding room and remote user details
 			setRemoteUserDetails(remoteUserDetails);
 			setRoomId(roomId);
 			setPeer(new PeerService());
@@ -67,7 +71,9 @@ const CallPageHome = () => {
 
 	const incomingOfferHandler = useCallback(
 		async ({ remoteUserDetails, roomId, offer }) => {
-			console.log("negotiation offer coming");
+			console.log("NEGOTIATION OFFER CREATEING");
+			// If already connected with someone close that call
+			if (peer.current) closeVideoCall();
 			setRemoteUserDetails(remoteUserDetails);
 			setRoomId(roomId);
 			const newPeer = new PeerService();
