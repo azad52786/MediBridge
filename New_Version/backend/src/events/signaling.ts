@@ -22,6 +22,18 @@ export const handleSignalingEvents = (
 		}
 	);
 	// new Added
+	socket.on(
+		"negotiation-call-answer",
+		({ ans, roomId, name, remoteSocketId }) => {
+			io.to(remoteSocketId).emit("negotiation-call-answer", {
+				ans,
+				roomId,
+				name,
+				remoteSocketId: socket.id,
+			});
+		}
+	);
+	// new Added
 	socket.on("send-new-ice-candidates", ({ to, candidate }) => {
 		io.to(to).emit("new-ice-candidates", { candidate });
 	});

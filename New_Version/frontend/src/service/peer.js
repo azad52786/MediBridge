@@ -40,6 +40,7 @@ export class PeerService {
     async setRemoteDesc(sdp){
         if(this.peer){
             await this.peer.setRemoteDescription(new RTCSessionDescription(sdp));
+            console.log("answer saved in remote description");
         }
     }
 }

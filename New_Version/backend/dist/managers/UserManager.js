@@ -15,10 +15,10 @@ class UserService {
     addUser(socket, userName, roomId) {
         // Checking already in the queue or not
         if (this.queue.findIndex((s) => s.socket === socket) !== -1) {
-            console.log("you're already inside queue!");
+            console.log("You're already inside the Queue ❌❌");
             return;
         }
-        // Already present and Click on next button
+        // Already present and Click on next button -> Interested to join someone else
         if (roomId) {
             const roomDetails = this.roomService.getRoomDetails(roomId);
             if (!roomDetails)
@@ -38,6 +38,27 @@ class UserService {
             });
         }
         this.matchingUsers();
+    }
+    addCallMateOnly(socket, remoteSocketId, roomId) {
+        const roomDetails = this.roomService.getRoomDetails(roomId);
+        console.log("roomDetails is :", roomId, " ", roomDetails);
+        if (!roomDetails)
+            return;
+        const user1 = roomDetails.user1;
+        const user2 = roomDetails.user2;
+        console.log(user1, " ", remoteSocketId, " ", user2);
+        setTimeout(() => {
+            if (user1.socket === remoteSocketId) {
+                console.log("new joining of user1");
+                this.queue.push(user1);
+            }
+            else {
+                console.log("new joining of user2");
+                this.queue.push(user2);
+            }
+            this.roomService.removeRoomDetils(roomId);
+            this.matchingUsers();
+        }, 2000);
     }
     matchingUsers() {
         if (this.queue.length < 2) {

@@ -13,7 +13,7 @@ export class RoomService {
 	createRoom(user1: User, user2: User) {
 		let roomId = generateRoomId();
 		this.rooms.set(roomId, { user1, user2 });
-		// send the socket Id of User 2 for sending offer
+		// Sending the socket id and user details to initiate the call 
 		io.to(user1.socket).emit("match-done", {
 			roomId,
 			remoteUserDetails: user2,
@@ -37,12 +37,9 @@ export class RoomService {
 		this.rooms.delete(roomId);
 	}
 
-	findOtherSocketId = (socket: string): Room | null => {
+	findOtherSocketId(socket: string): Room | null{
 		for (let room of this.rooms.values()) {
-			if (room.user1.socket === socket) {
-				return room;
-			}
-			if (room.user2.socket === socket) {
+			if (room.user1.socket === socket || room.user2.socket === socket) {
 				return room;
 			}
 		}

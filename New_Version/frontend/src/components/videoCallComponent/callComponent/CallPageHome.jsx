@@ -19,7 +19,6 @@ import Spinner from "../../core/Spinner";
 import { CiMicrophoneOn, CiMicrophoneOff } from "react-icons/ci";
 import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
 import ChatSection from "./ChatSection";
-import { BsChatText } from "react-icons/bs";
 import MenuSidebar from "./MenuSidebar";
 import navbarlogo from "../../../assets/smallnavbarlogo.png";
 import bgImage from "../../../assets/peopleImage/Untitled design.png";
@@ -36,25 +35,192 @@ const CallPageHome = () => {
 	const name = searchParams.get("userName");
 	const [localStream, setLocalStream] = useState(null);
 	const [remoteStream, setRemoteStream] = useState(null);
-	const [roomId, setRoomId] = useState(null);
+	// const [roomId, setRoomId] = useState(null);
 	const [allChat, setAllChat] = useState([]);
-	const [remoteUserDetails, setRemoteUserDetails] = useState(null);
-	const [peer, setPeer] = useState(null);
+	const [remoteUserDetails, setRemoteUserDetails] = useState(null); // NEEDFUL
 	const [currentMenuItem, setCurrentMenuItem] = useState(
 		ALL_CALL_MENU_BAR_ITEMS.CHAT
 	);
 	const [matching, setMatching] = useState(false);
-	const localvideoRef = useRef("");
-	const remotevideoRef = useRef("");
+	const localVideoRef = useRef(null);
+	const remotevideoRef = useRef(null);
+	const remoteUserSocketId = useRef(null); // NEEDFUL
 	const socket = useSocket();
 	const remoteUserIdRef = useRef(null);
+	const peer = useRef(null);
+	const roomIdRef = useRef(null);
 	const navigate = useNavigate();
+
+	// function to close the video call
+	const closeVideoCall = useCallback(() => {
+		if (peer.current) {
+			console.log("close video call called!!!");
+			peer.current.peer.ontrack = null;
+			peer.current.peer.onremovetrack = null;
+			peer.current.peer.onremovestream = null;
+			peer.current.peer.onicecandidate = null;
+			peer.current.peer.oniceconnectionstatechange = null;
+			peer.current.peer.onsignalingstatechange = null;
+			peer.current.peer.onicegatheringstatechange = null;
+			peer.current.peer.onnegotiationneeded = null;
+			peer.current.peer.onconnectionstatechange = null;
+			if (remotevideoRef.current && remotevideoRef.current.srcObject) {
+				remotevideoRef.current.srcObject
+					.getTracks()
+					.forEach((track) => track.stop());
+				setRemoteStream(null);
+				setRemoteUserDetails(null);
+				remoteUserIdRef.current = null;
+				remotevideoRef.current = null;
+				roomIdRef.current = null;
+				// setIsConnected(false);
+			}
+			peer.current.peer.close();
+			peer.current = null;
+		}
+	}, [peer, remotevideoRef, remoteUserIdRef, setRemoteUserDetails]);
 
 	const startCallingHandler = useCallback(() => {
 		// Requesting for a new Room
+		if (matching) return;
 		setMatching(true);
-		socket.emit("request-room", { name, roomId });
-	}, [socket, name, roomId]);
+		socket.emit("request-room", { name, roomId: roomIdRef.current });
+		// After requesting for new callmate close the call with the ex-callmate
+		if (roomIdRef.current || peer.current) {
+			closeVideoCall();
+		}
+	}, [socket, name, closeVideoCall, matching]);
+	const trackEventHendler = useCallback(
+		(event) => {
+			console.log("new track added");
+			console.log(event.streams[0]);
+			setRemoteStream(event.streams[0]);
+		},
+		[setRemoteStream]
+	);
+	const negotiationneededEventHandler = useCallback(async () => {
+		if (peer.current instanceof PeerService) {
+			const offer = await peer.current.getOffer();
+			console.log("CALLING OFFER IS : ", offer);
+
+			// sending the offer to another party
+			socket.emit("negotiation-call-offer", {
+				offer,
+				roomId: roomIdRef.current,
+				name,
+				remoteSocketId: remoteUserSocketId.current,
+			});
+		}
+	}, [name, peer, remoteUserSocketId, socket]);
+
+	const iceCandidateEventHandler = useCallback(
+		(event) => {
+			if (event.candidate) {
+				socket.emit("send-new-ice-candidates", {
+					to: remoteUserSocketId.current,
+					candidate: event.candidate,
+				});
+			}
+		},
+		[remoteUserSocketId, socket]
+	);
+
+	const handleRemoveTrackEvent = useCallback(() => {
+		if (remoteStream) {
+			const trackLength = remoteStream.getTracks().length;
+			if (trackLength === 0) {
+				// before closing the video call make a request to backend to remove the room and add a new room
+				closeVideoCall();
+			}
+		}
+	}, [closeVideoCall, remoteStream]);
+
+	const handleICEConnectionStateChangeEvent = useCallback(() => {
+		switch (peer.current.peer.iceConnectionState) {
+			case "closed":
+			case "failed":
+				console.log(
+					"ICE connection state changed to: ",
+					peer.current.peer.iceConnectionState
+				);
+				// before closing the video call make a request to backend to remove the room and add a new room
+				closeVideoCall();
+				console.log("Closing the video call!");
+				break;
+			case "connected":
+				console.log(
+					"ICE connection state changed to: ",
+					peer.current.peer.iceConnectionState
+				);
+				// TODO: Add some UI change when connected (user video)
+				break;
+			case "disconnected":
+				console.log(
+					"ICE connection state changed to: ",
+					peer.current.peer.iceConnectionState
+				);
+				// TODO: Add some UI change until it's reconnected (blary effect)
+				break;
+			default:
+				console.log(
+					"ICE connection state changed to an unhandled state: ",
+					peer.current.peer.iceConnectionState
+				);
+				break;
+		}
+	}, [peer, closeVideoCall]);
+
+	// function handleSignalingStateChangeEvent(event) {
+	// 	switch (myPeerConnection.signalingState) {
+	// 		case "closed":
+	// 			closeVideoCall();
+	// 			break;
+	// 	}
+	// }
+
+	const handleSignalingStateChangeEvent = useCallback(() => {
+		switch (peer.current.peer.signalingState) {
+			case "closed":
+				console.log("closeing the signalling state");
+				closeVideoCall();
+				break;
+		}
+	}, [peer, closeVideoCall]);
+
+	const handleConnectionStateChangeEvent = useCallback(() => {
+		switch (peer.current.peer.connectionState) {
+			case "closed":
+			case "failed":
+			case "disconnected":
+				console.log("closeing the connection state");
+				// before closing the video call make a request to backend to remove the room and add a new room
+				closeVideoCall();
+				break;
+		}
+	}, [peer, closeVideoCall]);
+
+	const createPeerConnection = useCallback(() => {
+		const ps = new PeerService();
+
+		ps.peer.onicecandidate = iceCandidateEventHandler;
+		ps.peer.ontrack = trackEventHendler;
+		ps.peer.onnegotiationneeded = negotiationneededEventHandler;
+		ps.peer.onremovetrack = handleRemoveTrackEvent;
+		ps.peer.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
+		//   ps.peer.onicegatheringstatechange =
+		//     handleICEGatheringStateChangeEvent;
+		ps.peer.onsignalingstatechange = handleSignalingStateChangeEvent;
+		ps.peer.onconnectionstatechange = handleConnectionStateChangeEvent;
+		return ps;
+	}, [
+		iceCandidateEventHandler,
+		trackEventHendler,
+		negotiationneededEventHandler,
+		handleRemoveTrackEvent,
+		handleICEConnectionStateChangeEvent,
+		handleSignalingStateChangeEvent,
+		handleConnectionStateChangeEvent,
+	]);
 
 	const newCallGenerator = useCallback(
 		({ roomId, remoteUserDetails }) => {
@@ -63,10 +229,27 @@ const CallPageHome = () => {
 			if (peer.current) closeVideoCall();
 			// Adding room and remote user details
 			setRemoteUserDetails(remoteUserDetails);
-			setRoomId(roomId);
-			setPeer(new PeerService());
+			remoteUserSocketId.current = remoteUserDetails.socket;
+			roomIdRef.current = roomId;
+			// Now createing the peer connection
+			peer.current = createPeerConnection();
+			console.log("CREATED PEER SERVICE : ", peer.current);
+			// Adding tracks based on the sender already exists or not
+			const senders = peer.current.peer.getSenders();
+			if (!localStream) {
+				console.log("Local Stream is not available");
+				return;
+			}
+			for (let track of localStream.getTracks()) {
+				let isTrackExists = senders.some((sender) => sender.track === track);
+				if (!isTrackExists) {
+					peer.current.peer.addTrack(track, localStream);
+				} else {
+					console.log("Tracks already exists");
+				}
+			}
 		},
-		[setRemoteUserDetails, setRoomId, setPeer]
+		[peer, closeVideoCall, createPeerConnection, localStream]
 	);
 
 	const incomingOfferHandler = useCallback(
@@ -75,72 +258,99 @@ const CallPageHome = () => {
 			// If already connected with someone close that call
 			if (peer.current) closeVideoCall();
 			setRemoteUserDetails(remoteUserDetails);
-			setRoomId(roomId);
-			const newPeer = new PeerService();
-			await newPeer.setRemoteDesc(offer);
-			setPeer(newPeer);
-			const answer = await newPeer.getAnswer();
+			remoteUserSocketId.current = remoteUserDetails.socket;
+			roomIdRef.current = roomId;
+			peer.current = createPeerConnection();
+			await peer.current.setRemoteDesc(offer);
+			const senders = peer.current.peer.getSenders();
+			if (!localStream) {
+				console.log("Local Stream is not available");
+				return;
+			}
+			for (let track of localStream.getTracks()) {
+				let isTrackExists = senders.some((sender) => sender.track === track);
+				if (!isTrackExists) {
+					peer.current.peer.addTrack(track, localStream);
+				} else {
+					console.log("Tracks already exists");
+				}
+			}
+			const answer = await peer.current.getAnswer();
 			// Sending the answer to other party
+			console.log(remoteUserSocketId.current);
 			socket.emit("negotiation-call-answer", {
 				ans: answer,
 				roomId,
 				name,
-				remoteSocketId: remoteUserDetails.socket,
+				remoteSocketId: remoteUserSocketId.current,
 			});
+			setMatching(false);
 		},
-		[setRemoteUserDetails, setRoomId, setPeer, socket, name]
+		[
+			remoteUserSocketId,
+			localStream,
+			closeVideoCall,
+			createPeerConnection,
+			socket,
+			name,
+		]
 	);
 
 	const incomingAnswerHandler = useCallback(
 		async ({ ans }) => {
-			if (!peer) return;
-
-			await peer.setRemoteDesc(ans);
+			if (!peer.current) return;
+			await peer.current.setRemoteDesc(ans);
+			setMatching(false);
 		},
 		[peer]
 	);
 
 	const newIceCandidateHandler = useCallback(
 		({ candidate }) => {
-			if (!peer) return;
-			peer.peer.addIceCandidate(candidate);
+			if (!peer.current) return;
+			const newCandidate = new RTCIceCandidate(candidate);
+			peer.current.peer.addIceCandidate(newCandidate);
 		},
 		[peer]
 	);
 
-	useEffect(() => {
-		if (!localStream || !peer) return;
-		// Adding Tracks into the new RTCPeerConnection
+	// useEffect(() => {
+	// 	if (!localStream || !peer) return;
+	// 	// Adding Tracks into the new RTCPeerConnection
 
-		localStream
-			.getTracks()
-			.forEach((track) => peer.peer.addTrack(track, localStream));
+	// 	// adding the tracks
 
-		if (peer.peer instanceof RTCPeerConnection) {
-			peer.peer.ontrack = (event) => {
-				setRemoteStream(event.streams[0]);
-			};
+	// 	if (peer.peer instanceof RTCPeerConnection) {
+	// 		peer.peer.ontrack = trackEventHendler;
 
-			// TODO:- negotiationneeded problem go through the negotiation needed docs agina
-			peer.peer.onnegotiationneeded = async () => {
-				const offer = await peer.getOffer();
-				// sending the offer to another party
-				socket.emit("negotiation-call-offer", {
-					offer,
-					roomId,
-					name,
-					remoteSocketId: remoteUserDetails.socket,
-				});
-			};
+	// 		//TODO:- negotiationneeded problem go through the negotiationneeded docs agina
+	// 		peer.peer.onnegotiationneeded = negotiationneededEventHandler;
 
-			peer.peer.onicecandidate = (event) => {
-				socket.emit("send-new-ice-candidates", {
-					to: remoteUserDetails.socket,
-					candidate: event.candidate,
-				});
-			};
-		}
-	}, [peer]);
+	// 		peer.peer.onicecandidate = iceCandidateEventHandler;
+	// 	}
+	// }, [peer]);
+	const stopcallhandler = useCallback(() => {
+		if (
+			!peer.current ||
+			!roomIdRef.current ||
+			!remoteStream ||
+			!remoteUserSocketId.current
+		)
+			return;
+
+		socket.emit("stop-call", {
+			roomId: roomIdRef.current,
+			remoteSocketId: remoteUserSocketId.current,
+			name,
+		});
+
+		closeVideoCall();
+	}, [name, socket, remoteStream, remoteUserSocketId, peer, closeVideoCall]);
+	
+	const closeFromRemote = useCallback(() => {
+		closeVideoCall();
+		setMatching(true);
+	}, [closeVideoCall])
 
 	useEffect(() => {
 		if (!socket) return;
@@ -148,12 +358,14 @@ const CallPageHome = () => {
 		socket.on("negotiation-call-offer", incomingOfferHandler);
 		socket.on("negotiation-call-answer", incomingAnswerHandler);
 		socket.on("new-ice-candidates", newIceCandidateHandler);
+		socket.on("stop-by-remote-user", closeFromRemote);
 
 		return () => {
 			socket.off("match-done", newCallGenerator);
 			socket.off("negotiation-call-offer", incomingOfferHandler);
-			socket.off("negotiation-call-offer", incomingAnswerHandler);
+			socket.off("negotiation-call-answer", incomingAnswerHandler);
 			socket.off("new-ice-candidates", newIceCandidateHandler);
+			socket.on("stop-by-remote-user", closeFromRemote);
 		};
 	}, [
 		socket,
@@ -161,6 +373,7 @@ const CallPageHome = () => {
 		incomingOfferHandler,
 		incomingAnswerHandler,
 		newIceCandidateHandler,
+		closeFromRemote,
 	]);
 
 	useEffect(() => {
@@ -170,7 +383,7 @@ const CallPageHome = () => {
 
 	useEffect(() => {
 		if (!localStream) return;
-		localvideoRef.current.srcObject = localStream;
+		localVideoRef.current.srcObject = localStream;
 	}, [localStream]);
 
 	useEffect(() => {
@@ -245,8 +458,8 @@ const CallPageHome = () => {
 							{localStream ? (
 								<div className=" w-full h-full overflow-hidden relative">
 									<video
-										className="w-full h-full  rounded-md bg-violate-800"
-										ref={localvideoRef}
+										className="w-full h-full  rounded-md"
+										ref={localVideoRef}
 										autoPlay
 										muted
 										playsInline
@@ -271,21 +484,28 @@ const CallPageHome = () => {
 						</div>
 						<div className="w-full md:w-[49%] h-[48%] md:h-full overflow-hidden">
 							{remoteStream ? (
-								<video
-									// something wrong heppening here fix height of the video
-									className="w-full h-full rounded-md backdrop-blur-lg"
-									ref={remotevideoRef}
-									autoPlay
-									playsInline
-									style={{
-										// backgroundImage: `url(${bgImage})`,
-										backgroundPosition: `center`,
-										backdropFilter: true,
-										transform: "scale(-1, 1)",
-										objectPosition: "center",
-										objectFit: "cover",
-									}}
-								></video>
+								<div className=" w-full h-full overflow-hidden relative">
+									<video
+										// something wrong heppening here fix height of the video
+										className="w-full h-full rounded-md backdrop-blur-lg"
+										ref={remotevideoRef}
+										autoPlay
+										playsInline
+										style={{
+											// backgroundImage: `url(${bgImage})`,
+											backgroundPosition: `center`,
+											backdropFilter: true,
+											transform: "scale(-1, 1)",
+											objectPosition: "center",
+											objectFit: "cover",
+										}}
+									></video>
+									<div className=" font-bold text-3xl font-karla lg:font-edu-sa absolute bottom-1 left-2">
+										{remoteUserDetails?.userName
+											? remoteUserDetails?.userName.substring(0, 30)
+											: ""}
+									</div>
+								</div>
 							) : (
 								<div
 									className=" w-full h-full flex
@@ -305,7 +525,7 @@ const CallPageHome = () => {
 							style={{
 								"--tw-gradient-angle": `${45}deg`,
 							}}
-							className=" md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover
+							className={`md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover
               font-karla lg:font-edu-sa
               font-bold text-sm md:text-xl ${matching ? "" : "after:bg-black"}`}
 							onClick={startCallingHandler}
@@ -316,8 +536,8 @@ const CallPageHome = () => {
 							style={{
 								"--tw-gradient-angle": `${130}deg`,
 							}}
-							className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-karla lg:font-edu-sa font-bold text-sm md:text-xl"
-							// onClick={stopCallHandeler}
+							className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-karla lg:font-edu-sa font-bold text-sm md:text-xl after:bg-black"
+							onClick={stopcallhandler}
 						>
 							{" "}
 							Stop{" "}
@@ -326,7 +546,7 @@ const CallPageHome = () => {
 							style={{
 								"--tw-gradient-angle": `${280}deg`,
 							}}
-							className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-karla lg:font-edu-sa font-bold text-xl flex items-center justify-center"
+							className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-karla lg:font-edu-sa font-bold text-xl flex items-center justify-center after:bg-black"
 							onClick={() =>
 								setIsVideoMute((pre) => {
 									let videoTracks = findTracksHandler(
@@ -349,7 +569,7 @@ const CallPageHome = () => {
 							style={{
 								"--tw-gradient-angle": `${240}deg`,
 							}}
-							className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px]  glow-on-hover font-karla lg:font-edu-sa font-bold text-xl flex items-center justify-center"
+							className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] after:bg-black  glow-on-hover font-karla lg:font-edu-sa font-bold text-xl flex items-center justify-center"
 							onClick={() =>
 								setIsAudioMute((pre) => {
 									let audioTracks = findTracksHandler(
@@ -372,7 +592,7 @@ const CallPageHome = () => {
 				</div>
 				<ChatSection
 					peer={peer}
-					roomId={roomId}
+					roomId={roomIdRef.current}
 					setAllChat={setAllChat}
 					socket={socket}
 					allChat={allChat}
