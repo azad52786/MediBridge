@@ -590,12 +590,12 @@ const CallPageHome = () => {
 					</div>
 				</div>
 				<ChatSection
-					peer={peer}
+					peer={peer.current}
 					roomId={roomIdRef.current}
 					setAllChat={setAllChat}
 					socket={socket}
 					allChat={allChat}
-					remoteUserIdRef={remoteUserIdRef}
+					remoteUserDetails={remoteUserDetails}
 				/>
 
 				<MenuSidebar
