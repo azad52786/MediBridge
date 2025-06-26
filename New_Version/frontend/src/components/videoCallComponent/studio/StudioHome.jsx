@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import ChangeDevice from "./ChangeDevice";
 import { HiOutlineSpeakerWave } from "react-icons/hi2";
-import { useStreamContext } from "../../../Context/StreamContext";
 import { CiMicrophoneOn, CiMicrophoneOff } from "react-icons/ci";
 import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
 import LeftSideBarComponent from "./LeftSideBarComponent";
@@ -13,6 +12,7 @@ import {
 } from "../../../utils/handelerFunction";
 import { TRACKS } from "../../../utils/constant";
 import { useLocation } from "react-router-dom";
+import { useStreamContext } from "../../../Context/StreamProvidor";
 
 export const REACT_ICONS = {
   AUDIO_UNMUTE: <CiMicrophoneOn />,
@@ -41,7 +41,6 @@ const StudioHome = () => {
     setIsAudioMute,
   } = useStreamContext();
   const videoRef = useRef(null);
-  const location = useLocation();
   const getUserMedia = useCallback(async () => {
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({

@@ -21,7 +21,8 @@ import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
 import ChatSection from "./ChatSection";
 import MenuSidebar from "./MenuSidebar";
 import navbarlogo from "../../../assets/smallnavbarlogo.png";
-import bgImage from "../../../assets/peopleImage/Untitled design.png";
+import { useSocket } from "../../../Context/SocketProvidor";
+import { useStreamContext } from "../../../Context/StreamProvidor";
 const CallPageHome = () => {
 	const {
 		currentAudioDevice,

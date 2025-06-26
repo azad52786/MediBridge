@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useState } from "react";
+import { useState } from "react";
+import PropTypes from 'prop-types'
+import { StreamProvider } from "./StreamProvidor";
 
-const StreamProvider = createContext(null);
-
-export const useStreamContext = () => useContext(StreamProvider);
 const StreamContext = ({ children }) => {
   const [localStream, setLocalStream] = useState(null);
   const [videoDevices, setVideoDevices] = useState(null);
@@ -42,6 +41,11 @@ const StreamContext = ({ children }) => {
       {children}
     </StreamProvider.Provider>
   );
+};
+
+
+StreamContext.propTypes = {
+	children: PropTypes.node.isRequired,
 };
 
 export default StreamContext;

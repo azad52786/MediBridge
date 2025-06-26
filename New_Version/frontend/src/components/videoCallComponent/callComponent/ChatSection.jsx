@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
-import { useSocket } from "../../../Context/SocketContext";
+import PropTypes from "prop-types";
 
 const ChatSection = ({
   peer,
