@@ -6,8 +6,6 @@ import React, {
 	useState,
 } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSocket } from "../../../Context/SocketContext";
-import { useStreamContext } from "../../../Context/StreamContext";
 import { PeerService } from "../../../service/peer";
 import { ALL_CALL_MENU_BAR_ITEMS, TRACKS } from "../../../utils/constant";
 import {
