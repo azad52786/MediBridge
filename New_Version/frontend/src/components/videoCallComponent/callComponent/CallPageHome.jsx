@@ -346,12 +346,19 @@ const CallPageHome = () => {
 		});
 
 		closeVideoCall();
-	}, [name, socket, remoteStream, remoteUserSocketId, peer, closeVideoCall]);
-	
+	}, [
+		name,
+		socket,
+		remoteStream,
+		remoteUserSocketId,
+		peer,
+		closeVideoCall,
+	]);
+
 	const closeFromRemote = useCallback(() => {
 		closeVideoCall();
 		setMatching(true);
-	}, [closeVideoCall])
+	}, [closeVideoCall]);
 
 	useEffect(() => {
 		if (!socket) return;
