@@ -1,13 +1,9 @@
-import {
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { PeerService } from "../../../service/peer";
 import { ALL_CALL_MENU_BAR_ITEMS, TRACKS } from "../../../utils/constant";
 import {
+	captureVideoThumbnail,
 	findTracksHandler,
 	muteAndUnmuteHandeler,
 } from "../../../utils/handelerFunction";
@@ -29,25 +25,26 @@ const CallPageHome = () => {
 		setIsAudioMute,
 		setIsVideoMute,
 	} = useStreamContext();
-	const [searchParams, ] = useSearchParams();
+	const [searchParams] = useSearchParams();
 	const name = searchParams.get("userName");
 	const [localStream, setLocalStream] = useState(null);
 	const [remoteStream, setRemoteStream] = useState(null);
 	// const [roomId, setRoomId] = useState(null);
 	const [allChat, setAllChat] = useState([]);
-	const [remoteUserDetails, setRemoteUserDetails] = useState(null); // NEEDFUL
+	const [remoteUserDetails, setRemoteUserDetails] = useState(null);
 	const [currentMenuItem, setCurrentMenuItem] = useState(
 		ALL_CALL_MENU_BAR_ITEMS.CHAT
 	);
 	const [matching, setMatching] = useState(false);
 	const localVideoRef = useRef(null);
 	const remotevideoRef = useRef(null);
-	const remoteUserSocketId = useRef(null); // NEEDFUL
+	const remoteUserSocketId = useRef(null);
 	const socket = useSocket();
 	const remoteUserIdRef = useRef(null);
 	const peer = useRef(null);
 	const roomIdRef = useRef(null);
 	const navigate = useNavigate();
+	const thumbnailBase64Ref = useRef(null);
 
 	// function to close the video call
 	const closeVideoCall = useCallback(() => {
@@ -82,7 +79,11 @@ const CallPageHome = () => {
 		// Requesting for a new Room
 		setMatching((val) => {
 			if (val) return val;
-			socket.emit("request-room", { name, roomId: roomIdRef.current });
+			socket.emit("request-room", {
+				name,
+				roomId: roomIdRef.current,
+				userImage: thumbnailBase64Ref.current,
+			});
 			// After requesting for new callmate close the call with the ex-callmate
 			if (roomIdRef.current || peer.current) {
 				closeVideoCall();
@@ -346,14 +347,7 @@ const CallPageHome = () => {
 		});
 
 		closeVideoCall();
-	}, [
-		name,
-		socket,
-		remoteStream,
-		remoteUserSocketId,
-		peer,
-		closeVideoCall,
-	]);
+	}, [name, socket, remoteStream, remoteUserSocketId, peer, closeVideoCall]);
 
 	const closeFromRemote = useCallback(() => {
 		closeVideoCall();
@@ -392,6 +386,18 @@ const CallPageHome = () => {
 	useEffect(() => {
 		if (!localStream) return;
 		localVideoRef.current.srcObject = localStream;
+		setTimeout(() => {
+			(async () => {
+				try {
+					thumbnailBase64Ref.current = await captureVideoThumbnail(
+						localVideoRef.current
+					);
+					console.log(thumbnailBase64Ref.current);
+				} catch (e) {
+					console.log(e);
+				}
+			})();
+		}, 300);
 	}, [localStream]);
 
 	useEffect(() => {
@@ -493,14 +499,23 @@ const CallPageHome = () => {
 						<div className="w-full md:w-[49%] h-[48%] md:h-full overflow-hidden">
 							{remoteStream ? (
 								<div className=" w-full h-full overflow-hidden relative">
+									<div
+										className="absolute inset-0 z-0"
+										style={{
+											backgroundImage: `url(${remoteUserDetails?.userImage})`,
+											backgroundSize: "cover",
+											backgroundPosition: "center",
+											filter: "blur(16px)",
+											transform: "scale(-1, 1)",
+										}}
+									></div>
 									<video
-										// something wrong heppening here fix height of the video
 										className="w-full h-full rounded-md backdrop-blur-lg"
 										ref={remotevideoRef}
 										autoPlay
 										playsInline
 										style={{
-											// backgroundImage: `url(${bgImage})`,
+											// backgroundImage: `url(${remoteUserDetails?.userImage})`,
 											backgroundPosition: `center`,
 											backdropFilter: true,
 											transform: "scale(-1, 1)",

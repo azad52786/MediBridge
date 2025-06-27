@@ -9,9 +9,17 @@ export const handleMatchmakingEvents = (
 	// new Added
 	socket.on(
 		"request-room",
-		({ name, roomId }: { name: string; roomId: string | null }) => {
+		({
+			name,
+			roomId,
+			userImage,
+		}: {
+			name: string;
+			roomId: string | null;
+			userImage: Base64URLString;
+		}) => {
 			console.log(`Matchmaking request from : ${name}`);
-			userService.addUser(socket.id, name, roomId);
+			userService.addUser(socket.id, name, roomId, userImage);
 		}
 	);
 

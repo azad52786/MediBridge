@@ -20,7 +20,7 @@ export class UserService {
 		this.roomService = new RoomService();
 	}
 
-	addUser(socket: string, userName: string, roomId: string | null): void {
+	addUser(socket: string, userName: string, roomId: string | null, userImage: Base64URLString): void {
 		// Checking already in the queue or not
 		if (this.queue.findIndex((s) => s.socket === socket) !== -1) {
 			console.log("You're already inside the Queue ❌❌");
@@ -43,9 +43,10 @@ export class UserService {
 			this.queue.push({
 				socket,
 				userName,
+				userImage
 			});
 		}
-
+		
 		this.matchingUsers();
 	}
 	

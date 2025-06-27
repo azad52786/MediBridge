@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleMatchmakingEvents = void 0;
 const handleMatchmakingEvents = (io, socket, userService) => {
     // new Added
-    socket.on("request-room", ({ name, roomId }) => {
+    socket.on("request-room", ({ name, roomId, userImage, }) => {
         console.log(`Matchmaking request from : ${name}`);
-        userService.addUser(socket.id, name, roomId);
+        userService.addUser(socket.id, name, roomId, userImage);
     });
     socket.on("newConnection", ({ name, remoteSocket, roomId }) => {
         io.to(remoteSocket).emit("connection:end");

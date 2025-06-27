@@ -12,7 +12,7 @@ class UserService {
         this.queue = [];
         this.roomService = new RoomService_1.RoomService();
     }
-    addUser(socket, userName, roomId) {
+    addUser(socket, userName, roomId, userImage) {
         // Checking already in the queue or not
         if (this.queue.findIndex((s) => s.socket === socket) !== -1) {
             console.log("You're already inside the Queue ❌❌");
@@ -35,6 +35,7 @@ class UserService {
             this.queue.push({
                 socket,
                 userName,
+                userImage
             });
         }
         this.matchingUsers();
