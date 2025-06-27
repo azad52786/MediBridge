@@ -80,14 +80,16 @@ const CallPageHome = () => {
 
 	const startCallingHandler = useCallback(() => {
 		// Requesting for a new Room
-		if (matching) return;
-		setMatching(true);
-		socket.emit("request-room", { name, roomId: roomIdRef.current });
-		// After requesting for new callmate close the call with the ex-callmate
-		if (roomIdRef.current || peer.current) {
-			closeVideoCall();
-		}
-	}, [socket, name, closeVideoCall, matching]);
+		setMatching((val) => {
+			if (val) return val;
+			socket.emit("request-room", { name, roomId: roomIdRef.current });
+			// After requesting for new callmate close the call with the ex-callmate
+			if (roomIdRef.current || peer.current) {
+				closeVideoCall();
+			}
+			return true;
+		});
+	}, [socket, name, closeVideoCall]);
 	const trackEventHendler = useCallback(
 		(event) => {
 			console.log("new track added");
@@ -193,9 +195,10 @@ const CallPageHome = () => {
 				console.log("closeing the connection state");
 				// before closing the video call make a request to backend to remove the room and add a new room
 				closeVideoCall();
+				startCallingHandler();
 				break;
 		}
-	}, [peer, closeVideoCall]);
+	}, [peer, closeVideoCall, startCallingHandler]);
 
 	const createPeerConnection = useCallback(() => {
 		const ps = new PeerService();
