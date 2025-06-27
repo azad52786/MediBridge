@@ -535,8 +535,13 @@ const CallPageHome = () => {
 							style={{
 								"--tw-gradient-angle": `${130}deg`,
 							}}
-							className="md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-karla lg:font-edu-sa font-bold text-sm md:text-xl after:bg-black"
+							className={`md:w-[70px] md:h-[50px]  w-[50px] h-[40px] glow-on-hover font-karla lg:font-edu-sa font-bold text-sm md:text-xl after:bg-black ${
+								matching
+									? "cursor-not-allowed after:bg-black text-white"
+									: "cursor-pointer"
+							}`}
 							onClick={stopcallhandler}
+							disabled={matching}
 						>
 							{" "}
 							Stop{" "}
