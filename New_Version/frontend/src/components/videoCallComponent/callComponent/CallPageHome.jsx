@@ -1,7 +1,6 @@
-import React, {
+import {
 	useCallback,
 	useEffect,
-	useReducer,
 	useRef,
 	useState,
 } from "react";
@@ -30,7 +29,7 @@ const CallPageHome = () => {
 		setIsAudioMute,
 		setIsVideoMute,
 	} = useStreamContext();
-	const [searchParams, setSearchParams] = useSearchParams();
+	const [searchParams, ] = useSearchParams();
 	const name = searchParams.get("userName");
 	const [localStream, setLocalStream] = useState(null);
 	const [remoteStream, setRemoteStream] = useState(null);
