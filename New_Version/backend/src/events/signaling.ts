@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { UserService } from "../managers/UserManager";
+import { UserService } from "../services/UserService";
 
 export const handleSignalingEvents = (
 	io: Server,
