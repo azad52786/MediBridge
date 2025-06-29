@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import { Socket } from "socket.io";
 import { Server } from "socket.io";
-import { UserService } from "./managers/UserManager";
+import { UserService } from "./services/UserService";
 import { handleMatchmakingEvents } from "./events/matchmaking";
 import { handleSignalingEvents } from "./events/signaling";
 import { handleChatEvents } from "./events/chatEvents";
@@ -24,7 +24,7 @@ const userService = new UserService();
 io.on("connection", (socket: Socket) => {
 	console.log(`User connected: ${socket.id}`);
 
-	// Register matchmaking events
+	// Register match-making events
 	handleMatchmakingEvents(io, socket, userService);
 
 	// Register signalling events
@@ -39,6 +39,36 @@ console.log(process.env.PORT);
 
 app.get("/", (req, res) => {
 	res.send("Hello, TypeScript!");
+});
+
+// API endpoint to monitor queue and rooms
+app.get("/api/status", async (req, res) => {
+	try {
+		const queueStatus = await userService.getQueueStatus();
+		const roomStatus = await userService.getRoomStatus();
+
+		res.json({
+			queue: queueStatus,
+			rooms: roomStatus,
+			timestamp: new Date().toISOString(),
+		});
+	} catch (error) {
+		console.error("Error getting status:", error);
+		res.status(500).json({ error: "Failed to get status" });
+	}
+});
+
+// Handle graceful shutdown
+process.on("SIGINT", async () => {
+	console.log("Shutting down server...");
+	await userService.cleanup();
+	process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+	console.log("Shutting down server...");
+	await userService.cleanup();
+	process.exit(0);
 });
 
 server.listen(PORT, () => {
