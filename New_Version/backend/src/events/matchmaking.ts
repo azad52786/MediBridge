@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { UserService } from "../managers/UserManager";
+import { UserService } from "../services/UserService";
 
 export const handleMatchmakingEvents = (
 	io: Server,
@@ -9,7 +9,7 @@ export const handleMatchmakingEvents = (
 	// new Added
 	socket.on(
 		"request-room",
-		({
+		async ({
 			name,
 			roomId,
 			userImage,
@@ -19,27 +19,19 @@ export const handleMatchmakingEvents = (
 			userImage: Base64URLString;
 		}) => {
 			console.log(`Matchmaking request from : ${name}`);
-			userService.addUser(socket.id, name, roomId, userImage);
+			await userService.addUser(socket.id, name, roomId, userImage);
 		}
 	);
 
-	socket.on("newConnection", ({ name, remoteSocket, roomId }) => {
-		io.to(remoteSocket).emit("connection:end");
-		userService.addNextUser(socket.id, remoteSocket, roomId);
-	});
-
-	// socket.on("call:stop", ({ roomId }) => {
-	// 	userService.addOneUser(roomId, socket.id);
-	// });
-
-	socket.on("stop-call", ({ roomId, remoteSocketId, name }) => {
+	socket.on("stop-call", async ({ roomId, remoteSocketId, name }) => {
 		console.log("remote socketId is :", remoteSocketId);
 		io.to(remoteSocketId).emit("stop-by-remote-user");
-		userService.addCallMateOnly(socket.id, remoteSocketId, roomId);
+		await userService.addCallMateOnly(socket.id, remoteSocketId, roomId);
 	});
 
-	socket.on("disconnect", () => {
+	socket.on("disconnect", async () => {
 		console.log(`User disconnected: ${socket.id}`);
-		userService.removeRoom(socket.id, userService, true);
+		await userService.removeUserFromQueue(socket.id);
+		await userService.removeRoom(socket.id, userService, true);
 	});
 };
